@@ -1,16 +1,14 @@
 # Dynamic 7land
 
-English Windows desktop island with an animated robot, Claude and Codex session monitoring, screen questions, project editing and everyday desktop tools. **Version 1.1.0**, maintained as a TwoCode-based fork for Jeeva Pilli.
+English Windows desktop island with an animated robot, Claude and Codex session monitoring, screen questions, project editing and everyday desktop tools. **Version 1.1.0**, maintained by Jeeva Pilli.
 
-The original desktop application is [TwoCode 1.2.0-beta.1](https://github.com/levon-z/TwoCode/releases/tag/v1.2.0-beta.1) by levon-z. Its credits and notices are retained. This fork adds its own identity, English interface, Claude / Arena setup, API routing, encrypted provider-key storage, independent profile, packaging and publishing workflows.
+Dynamic 7land brings Claude and Arena connections, encrypted provider-key storage, an independent desktop profile and a complete Windows portable download into one English interface.
 
 ## Run on Windows
 
-Download the Windows x64 ZIP from this repository's Releases page after a release build completes. Extract the **whole folder** and open **Dynamic7land.exe**. Keep its runtime files together. The portable app does not need a separate Node.js installation.
+Download **Dynamic7land-Windows-x64.zip** from the [latest release](https://github.com/iamjeevapilli/dynamic-7land/releases/tag/v1.1.0). Extract the **whole folder** and open **Dynamic7land.exe**. Keep its runtime files together. The portable app does not need a separate Node.js installation.
 
-If using **Dynamic7land-Easy-Setup.zip**, extract it, keep your original **TwoCode-Windows.zip** nearby and run **INSTALL-AND-RUN.cmd**. Select the original ZIP if asked. Setup verifies that exact archive, creates a separate Dynamic7land folder and downloads the pinned Codex component from the official npm registry. If that download fails, the app still opens; retry it with **INSTALL-AI.cmd**. The small setup ZIP reuses the original runtime and is not a standalone Windows download.
-
-Quit an older JeevaBot or TwoCode instance from its tray menu before starting the new app. The new profile is independent. Use **Ctrl+Alt+T** or the tray icon to show the island. Right-click the tray icon for Settings and Quit.
+Quit any older desktop island instance from its tray menu before starting the new app. The new profile is independent. Use **Ctrl+Alt+T** or the tray icon to show the island. Right-click the tray icon for Settings and Quit.
 
 ## Connect Claude
 
@@ -92,4 +90,4 @@ For subsequent releases, update the package and release-note versions, test, the
 
 ## Attribution
 
-See [CREDITS.md](CREDITS.md), [LICENSE-DYNAMIC7LAND.txt](LICENSE-DYNAMIC7LAND.txt), `UPSTREAM.json` and `upstream-notices/`. The upstream package declares ISC but the supplied archives did not include a separate application license text. New contributions carry an ISC notice; upstream and third-party components retain their own rights. Dynamic 7land is an independent fork and is not endorsed by TwoCode, Anthropic, OpenAI, Arena, Spotify or Microsoft.
+Credits, source provenance and license information are provided in [CREDITS.md](CREDITS.md), [LICENSE-DYNAMIC7LAND.txt](LICENSE-DYNAMIC7LAND.txt), `UPSTREAM.json` and `upstream-notices/`.
