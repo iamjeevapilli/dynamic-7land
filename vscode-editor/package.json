@@ -1,0 +1,22 @@
+{
+  "name": "project-editor",
+  "publisher": "jeevapilli",
+  "displayName": "Dynamic 7land Project Editor",
+  "version": "1.1.0",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "activationEvents": [
+    "onUri"
+  ],
+  "main": "./extension.js",
+  "description": "Local project editing bridge for Dynamic7land. Derived from TwoCode.",
+  "extensionKind": [
+    "ui"
+  ],
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": true
+    }
+  }
+}
