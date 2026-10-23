@@ -6,8 +6,9 @@ async function main() {
   if (process.platform !== 'win32' || process.arch !== 'x64') throw new Error('Run this build on Windows x64.');
   const root = path.resolve(__dirname, '..');
   const out = path.join(root, 'dist', 'Dynamic7land');
-  const electron = path.join(path.dirname(require.resolve('electron/package.json')), 'dist');
-  if (!fs.existsSync(path.join(electron, 'electron.exe'))) throw new Error('Run npm ci first.');
+  // Electron 44 installs its pinned runtime lazily when the Node package is loaded.
+  const electron = path.dirname(require('electron'));
+  if (!fs.existsSync(path.join(electron, 'electron.exe'))) throw new Error('The Electron Windows runtime is unavailable.');
   fs.rmSync(out, { recursive: true, force: true });
   fs.cpSync(electron, out, { recursive: true });
   const appDir = path.join(out, 'resources', 'app');
