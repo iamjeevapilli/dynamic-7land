@@ -1,0 +1,20 @@
+DYNAMIC 7LAND 1.1 — ENGLISH WINDOWS EDITION
+
+Open Dynamic7land.exe from the fully extracted Windows folder.
+Open Settings → Claude & Arena to install and sign in to Claude, or configure Arena / Claude API access.
+For coding-session activity, enable your agent under Connections and restart that agent.
+For ChatGPT / Codex chat, use AI & Chat → Sign in with ChatGPT.
+
+ARENA: restricted free-router keys work only in interactive Claude Code. Use Open Claude via Arena. Direct desktop chat and projects require API-enabled access.
+
+If using the small setup ZIP, keep TwoCode-Windows.zip nearby and run INSTALL-AND-RUN.cmd. Run INSTALL-AI.cmd to retry a failed Codex download.
+The small setup reuses your original runtime. It is not a standalone Windows package.
+
+Ctrl+Alt+T shows the island. Right-click its tray icon for Settings or Quit.
+Close an older JeevaBot / TwoCode instance before starting this edition.
+
+Source publishing: run PUBLISH-TO-GITHUB.ps1 from a fresh source folder. It uses GitHub browser sign-in and targets iamjeevapilli/dynamic-7land as a public repository.
+Never put passwords or API keys in the source or a public issue.
+
+Based on TwoCode 1.2.0-beta.1 by levon-z. Credits are preserved in CREDITS.md.
+See README.md for complete setup, feature limits and verification details.

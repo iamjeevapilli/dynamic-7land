@@ -1,0 +1,22 @@
+{
+  "project": "TwoCode",
+  "author": "levon-z",
+  "release": "v1.2.0-beta.1",
+  "source": "https://github.com/levon-z/TwoCode/releases/tag/v1.2.0-beta.1",
+  "archive": "TwoCode-Windows.zip",
+  "archiveSha256": "b8e3efaa4d9354fbcce2c3b827169293274c96ea8933a1bcb905a07d1858ad51",
+  "declaredPackageLicense": "ISC",
+  "note": "The supplied application package declares ISC but does not include a separate application license text. Original documentation and runtime license notices are retained.",
+  "additionalSourceArchives": [
+    {
+      "name": "TwoCode-1.2.0-beta.1.tar.gz",
+      "sha256": "e20167cfcb81443270c9d44886bdcd579cac3e9920b99f6f89c86f96c6a1acfc",
+      "comparison": "Same 75 files; nine differ only in CRLF/LF line endings."
+    },
+    {
+      "name": "TwoCode-1.2.0-beta.1 (1).zip",
+      "sha256": "667c8099bb655ff8eace8530c553599a5256f05b31905617cb07b056abd2ecfb",
+      "comparison": "Same 75 files; nine differ only in CRLF/LF line endings."
+    }
+  ]
+}

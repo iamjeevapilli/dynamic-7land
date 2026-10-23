@@ -1,0 +1,60 @@
+{
+  "product": "Dynamic 7land",
+  "version": "1.1.0",
+  "owner": "Jeeva Pilli",
+  "target": "Windows x64",
+  "baseRelease": "TwoCode 1.2.0-beta.1",
+  "automatedTests": {
+    "passed": 37,
+    "failed": 0
+  },
+  "rendererChecks": {
+    "settingsTabs": 10,
+    "providerSave": true,
+    "modelDiscovery": true,
+    "providerTest": true,
+    "restrictedKeyError": true,
+    "arenaLauncher": true,
+    "englishMigration": true,
+    "serviceSave": true,
+    "minimumWindowSize": "820x560",
+    "islandRendered": true,
+    "errors": []
+  },
+  "nativeWindowsExecutionTested": false,
+  "liveProviderLoginsTested": false,
+  "executableCodeSectionsUnchanged": [
+    ".text",
+    ".rdata",
+    ".data",
+    ".pdata",
+    ".eh_fram",
+    ".fptable",
+    ".rodata",
+    ".tls",
+    "CPADinfo",
+    "LZMADEC",
+    "_RDATA",
+    "malloc_h",
+    "prot",
+    ".reloc"
+  ],
+  "dependencyDownloads": [
+    {
+      "name": "@openai/codex",
+      "version": "0.160.0",
+      "resolved": "https://registry.npmjs.org/@openai/codex/-/codex-0.160.0.tgz",
+      "integrity": "sha512-kEtVGzjRAYAMOwJxN39bGcna7LT3IDQgq64NNJ/dDTfu4OzZaocJcyNb5/gGJ/IVF/Vj7oK7E2m3nmTan7lpjg==",
+      "verified": true,
+      "downloadBytes": 4902
+    },
+    {
+      "name": "@openai/codex-win32-x64",
+      "version": "0.160.0-win32-x64",
+      "resolved": "https://registry.npmjs.org/@openai/codex/-/codex-0.160.0-win32-x64.tgz",
+      "integrity": "sha512-/gCFcuOmGlQkgGivWCtY8BNEDixh70Pue0HZOk9S8bj2vUIE1GLD9zcNB/KqqDJmn0S+lIttauLpzQnw6HOCHA==",
+      "verified": true,
+      "downloadBytes": 162643563
+    }
+  ]
+}
