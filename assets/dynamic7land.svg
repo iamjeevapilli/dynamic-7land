@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="shell" x1="0" y1="0" x2=".6" y2="1"><stop stop-color="#fff"/><stop offset="1" stop-color="#dce0fb"/></linearGradient>
+    <linearGradient id="visor" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#2e2546"/><stop offset="1" stop-color="#11111d"/></linearGradient>
+    <linearGradient id="purple" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#d9caff"/><stop offset="1" stop-color="#9a71ef"/></linearGradient>
+  </defs>
+  <path d="M256 147V87" stroke="#ebe7ff" stroke-width="18" stroke-linecap="round"/>
+  <path d="m256 38 33 33-33 33-33-33Z" fill="url(#purple)" stroke="#302540" stroke-width="8"/>
+  <rect x="39" y="221" width="42" height="102" rx="21" fill="#c5b3ed" stroke="#302540" stroke-width="9"/>
+  <rect x="431" y="221" width="42" height="102" rx="21" fill="#c5b3ed" stroke="#302540" stroke-width="9"/>
+  <rect x="63" y="130" width="386" height="306" rx="144" fill="url(#shell)" stroke="#302540" stroke-width="10"/>
+  <rect x="107" y="207" width="298" height="151" rx="67" fill="url(#visor)"/>
+  <path d="M139 232q50-17 105-5" fill="none" stroke="#fff" stroke-opacity=".13" stroke-width="9" stroke-linecap="round"/>
+  <rect x="173" y="248" width="38" height="65" rx="19" fill="url(#purple)"/>
+  <rect x="301" y="248" width="38" height="65" rx="19" fill="url(#purple)"/>
+  <path d="M239 326q17 14 34 0" fill="none" stroke="#c7b4ff" stroke-width="8" stroke-linecap="round"/>
+  <path d="M233 389h46" stroke="#a18abf" stroke-width="8" stroke-linecap="round"/>
+</svg>
