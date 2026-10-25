@@ -1,7 +1,7 @@
 {
   "name": "dynamic-7land",
-  "version": "1.1.0",
-  "description": "Dynamic 7land \u2014 English desktop island with Claude, Codex and Arena connections. A TwoCode-based fork.",
+  "version": "1.2.0",
+  "description": "Dynamic 7land \u2014 English Windows desktop island with free cloud models, local AI and optional account connections.",
   "main": "main.js",
   "scripts": {
     "test": "node --test",
@@ -17,7 +17,10 @@
     "desktop-assistant",
     "claude",
     "codex",
-    "arena-ai"
+    "arena-ai",
+    "ollama",
+    "openrouter",
+    "free-ai"
   ],
   "author": "Jeeva Pilli; based on TwoCode by levon-z",
   "license": "ISC",

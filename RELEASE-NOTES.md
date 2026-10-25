@@ -1,11 +1,10 @@
-Dynamic 7land 1.1 adds English text throughout the desktop interface, Claude Code installation and sign-in launchers, and API connections for Arena and Anthropic.
+Dynamic 7land 1.2 adds free cloud and local AI choices. Arena approval is no longer needed to set up these routes.
 
-- Route desktop chat, screenshot questions and project requests through your selected API provider.
-- Store API keys using Electron's encrypted Windows account storage; discover models and test the connection in Settings → Claude & Arena.
-- Launch interactive Claude Code through Arena. Arena keys restricted to interactive Claude Code cannot be used for desktop API requests.
-- Use the desktop island, animated robot, coding-session monitoring, approval controls, project editor, Word spelling review, Spotify controls and local desktop tools.
-- Use an independent profile and hook port. Original attribution and third-party notices are included.
+- **OpenRouter — free models only:** use your free OpenRouter key and `openrouter/free`, or choose an available `:free` model. Paid model IDs, paid fallback arrays and paid plugins are blocked; provider price ceilings are fixed at zero. Free quotas and model availability still apply.
+- **Ollama — local models:** use a downloaded model on your PC without an API key or AI API fees. Cloud models and remote aliases are rejected. Speed, memory use and answer quality depend on the model and your PC.
+- Desktop chat, screenshot questions, Word analysis and reviewed project requests use the provider you select. Screenshot questions require a vision-capable model; project schemas require model support.
+- Open **Settings → AI connections** and choose **Use free cloud models** or **Use local AI** for the setup steps. Existing Claude, Codex, Arena and Claude API connections remain available under their own account limits.
 
-Windows x64 portable build. Extract the complete ZIP before launching Dynamic7land.exe. Connect your own accounts; no passwords or API keys are bundled. The executable is unsigned.
+Download **Dynamic7land-Windows-x64.zip**, choose **Extract All**, open the extracted Dynamic7land folder and launch **Dynamic7land.exe**. Windows may display it as **Dynamic7land** with type **Application**. Keep the full folder together. Right-click the robot icon near the Windows clock and choose **Open island** or **Settings**.
 
-Browser Claude/ChatGPT conversation monitoring is coming soon. A companion website backend is not included. Arena's website Agent workspace opens in your browser and remains separate from its API.
+No account keys are included. Local and mocked-provider checks passed; native Windows desktop behavior and your live account access still need testing on your PC. The executable is unsigned. Original credits and third-party notices are included. Browser Claude/ChatGPT conversation monitoring and the optional companion website backend remain unavailable.

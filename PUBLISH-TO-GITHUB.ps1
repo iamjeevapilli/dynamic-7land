@@ -26,7 +26,7 @@ try {
     & git config user.email "$($account.id)+$($account.login)@users.noreply.github.com"
     & git add --all
     Check-Exit 'Could not stage the source.'
-    & git commit -m 'Release Dynamic 7land 1.1 with English UI and Claude / Arena connections'
+    & git commit -m 'Release Dynamic 7land 1.2 with free cloud and local AI'
     Check-Exit 'Could not commit the source.'
     & gh auth setup-git
     Check-Exit 'Could not set up GitHub Git authentication.'

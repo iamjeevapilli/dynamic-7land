@@ -31,6 +31,8 @@ function terminal(command, extraEnv = {}) {
 async function action(kind) {
   if (kind === 'install-claude') return terminal('irm https://claude.ai/install.ps1 | iex');
   if (kind === 'arena-website') { await shell.openExternal('https://arena.ai/agent'); return { ok: true }; }
+  if (kind === 'openrouter-keys') { await shell.openExternal('https://openrouter.ai/settings/keys'); return { ok: true }; }
+  if (kind === 'ollama-download') { await shell.openExternal('https://ollama.com/download/windows'); return { ok: true }; }
   if (kind === 'arena-keys') { await shell.openExternal('https://platform.arena.ai'); return { ok: true }; }
   if (kind === 'claude-console') { await shell.openExternal('https://platform.claude.com'); return { ok: true }; }
   const claude = claudeExecutable();
@@ -41,7 +43,7 @@ async function action(kind) {
   if (kind === 'codex-open') { const codex = codexExecutable(); if (!codex) throw new Error('The Codex runtime is missing. Run INSTALL-AI.cmd from the setup folder.'); return terminal('& ' + psQuote(codex)); }
   throw new Error('Unknown connection action.');
 }
-for (const [channel, fn] of Object.entries({ get: status, set: patch => { const config = service.set(patch); app.emit('dynamic7land-provider-changed', config.active ? config.provider : ''); return status(); }, models: provider => service.models(provider), test: async () => ({ answer: await service.answer('Reply only with: Connection successful.', 'This is a connection test.') }), action })) {
+for (const [channel, fn] of Object.entries({ get: status, set: patch => { const config = service.set(patch); app.emit('dynamic7land-provider-changed', service.supports(config.provider) ? config.provider : ''); return status(); }, models: provider => service.models(provider), test: async () => ({ answer: await service.answer('Reply only with: Connection successful.', 'This is a connection test.') }), action })) {
   ipcMain.handle('agent-connections:' + channel, async (event, payload) => { if (!trusted(event)) return { ok: false, error: 'Access denied.' }; try { return { ok: true, ...(channel === 'models' ? { models: await fn(payload) } : await fn(payload)) }; } catch (error) { return { ok: false, error: error.message }; } });
 }
 module.exports = { service, claudeExecutable, codexExecutable, status };

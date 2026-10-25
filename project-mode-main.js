@@ -871,7 +871,7 @@ async function testOpenAIConnection(
 
 async function testSelectedAI() {
   const config = await resolveAIConfig();
-  if (config.provider === 'arena' || config.provider === 'anthropic') {
+  if (externalAI.supports(config.provider)) {
     try { await externalAI.answer('Reply only with: Connection successful.', 'This is a connection test.'); return { ok: true }; }
     catch (error) { return { ok: false, error: error.message }; }
   }
@@ -1582,7 +1582,7 @@ async function openAIRequest(
   endpoint,
   body
 ) {
-  if (config.provider === 'arena' || config.provider === 'anthropic') return externalAI.apiRequest(config, endpoint, body);
+  if (externalAI.supports(config.provider)) return externalAI.apiRequest(config, endpoint, body);
   if (
     !config.ready ||
     !config.key

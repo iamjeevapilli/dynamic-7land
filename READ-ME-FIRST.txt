@@ -1,20 +1,17 @@
-DYNAMIC 7LAND 1.1 — ENGLISH WINDOWS EDITION
+DYNAMIC 7LAND 1.2 — FREE CLOUD AND LOCAL AI
 
-Open Dynamic7land.exe from the fully extracted Windows folder.
-Open Settings → Claude & Arena to install and sign in to Claude, or configure Arena / Claude API access.
-For coding-session activity, enable your agent under Connections and restart that agent.
-For ChatGPT / Codex chat, use AI & Chat → Sign in with ChatGPT.
+1. Extract the complete ZIP with Extract All.
+2. Open the extracted Dynamic7land folder.
+3. Open Dynamic7land.exe. Windows may show the name as Dynamic7land (Application).
+4. Open Settings → AI connections.
 
-ARENA: restricted free-router keys work only in interactive Claude Code. Use Open Claude via Arena. Direct desktop chat and projects require API-enabled access.
+FREE CLOUD: Choose Use free cloud models. Get a free OpenRouter key using the button, paste it in the app, keep openrouter/free, save and test. Only free model routes are allowed. Quotas and model availability still apply. No credit purchase or Arena approval is needed for this setup.
 
-If using the small setup ZIP, keep TwoCode-Windows.zip nearby and run INSTALL-AND-RUN.cmd. Run INSTALL-AI.cmd to retry a failed Codex download.
-The small setup reuses your original runtime. It is not a standalone Windows package.
+LOCAL AI: Install Ollama with the official download button and download a local model. Choose Use local AI → Load models, select it, save and test. No API key or AI API fees. Download size, memory use and speed depend on the model. Screenshot questions need a local vision model such as gemma3:4b. Cloud models are blocked in this route.
 
-Ctrl+Alt+T shows the island. Right-click its tray icon for Settings or Quit.
-Close an older JeevaBot / TwoCode instance before starting this edition.
+Your existing Claude, Codex, Arena and Claude API connections are optional and follow those services' account limits. Sign in to ChatGPT for Codex through AI & Chat.
 
-Source publishing: run PUBLISH-TO-GITHUB.ps1 from a fresh source folder. It uses GitHub browser sign-in and targets iamjeevapilli/dynamic-7land as a public repository.
-Never put passwords or API keys in the source or a public issue.
+To show the notch, right-click the robot icon near the Windows clock → Open island. Choose Settings from the same menu to reopen configuration. Dynamic7land-Settings.cmd also opens Settings directly. Quit an older instance before starting an updated version.
 
-Based on TwoCode 1.2.0-beta.1 by levon-z. Credits are preserved in CREDITS.md.
-See README.md for complete setup, feature limits and verification details.
+See README.md for setup and feature limits. Original credits and license notices are in CREDITS.md and upstream-notices.
+Never put API keys or passwords in a public issue or repository.

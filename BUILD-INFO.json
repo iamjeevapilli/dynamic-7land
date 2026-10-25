@@ -1,44 +1,28 @@
 {
   "product": "Dynamic 7land",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "owner": "Jeeva Pilli",
   "target": "Windows x64",
   "baseRelease": "TwoCode 1.2.0-beta.1",
   "automatedTests": {
-    "passed": 37,
+    "passed": 44,
     "failed": 0
   },
   "rendererChecks": {
-    "settingsTabs": 10,
-    "providerSave": true,
-    "modelDiscovery": true,
-    "providerTest": true,
-    "restrictedKeyError": true,
-    "arenaLauncher": true,
-    "englishMigration": true,
-    "serviceSave": true,
-    "minimumWindowSize": "820x560",
-    "islandRendered": true,
+    "method": "DOM integration using the actual provider service with mocked HTTP responses",
+    "freeCloudSelectionAndSave": true,
+    "passwordFieldAndKeyClearing": true,
+    "freeModelDiscovery": true,
+    "freeProviderTest": true,
+    "paidModelRejection": true,
+    "localSelectionHidesKey": true,
+    "localModelDiscoveryAndTest": true,
+    "existingAccountSelection": true,
+    "browserLayoutTested": false,
     "errors": []
   },
   "nativeWindowsExecutionTested": false,
   "liveProviderLoginsTested": false,
-  "executableCodeSectionsUnchanged": [
-    ".text",
-    ".rdata",
-    ".data",
-    ".pdata",
-    ".eh_fram",
-    ".fptable",
-    ".rodata",
-    ".tls",
-    "CPADinfo",
-    "LZMADEC",
-    "_RDATA",
-    "malloc_h",
-    "prot",
-    ".reloc"
-  ],
   "dependencyDownloads": [
     {
       "name": "@openai/codex",
@@ -56,5 +40,11 @@
       "verified": true,
       "downloadBytes": 162643563
     }
-  ]
+  ],
+  "verificationDate": "2026-10-25",
+  "syntaxChecks": {
+    "javascriptAndInlineScripts": 55,
+    "passed": true
+  },
+  "dependencyVerificationNote": "Pinned dependency integrity was checked during 1.1.0 preparation; versions are unchanged in 1.2.0."
 }

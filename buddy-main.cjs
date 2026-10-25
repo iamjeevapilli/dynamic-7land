@@ -224,14 +224,14 @@ async function drop() {
 // Dynamic7land's chat talks to the AI you connected in Dynamic7land → Verbindingen: Claude Code (your Claude account,
 // through the claude program) and/or Codex (your ChatGPT account, through the Codex built into Dynamic7land).
 // Both connected? You pick one in the chat; that choice is remembered.
-const AGENTS = { arena: 'Arena API', anthropic: 'Claude API', claudecode: 'Claude', codex: 'Codex' };
+const AGENTS = { ...require('./provider-connections.cjs').PROVIDER_NAMES, claudecode: 'Claude', codex: 'Codex' };
 const choiceFile = () => path.join(app.getPath('userData'), 'dynamic7land-chat.json');
 let chosen = null;
 function connectedAgents() {
   const providers = app.dynamic7landMonitor?.view?.()?.providers || [];
   const connection = agentConnections.service.publicConfig();
-  return Object.keys(AGENTS).filter(id => id === 'arena' || id === 'anthropic'
-    ? connection.active && connection.provider === id
+  return Object.keys(AGENTS).filter(id => agentConnections.service.supports(id)
+    ? connection.provider === id
     : id === 'claudecode' ? !!agentConnections.claudeExecutable()
       : !!agentConnections.codexExecutable() || providers.find(p => p.provider === id)?.hooksInstalled);
 }
@@ -302,7 +302,7 @@ function arrived() {
 function needs(message, fix) { const e = new Error(message); e.fix = fix; return e; }
 async function askAI(prompt, instructions, images = []) {
   const agent = currentAgent();
-  if (agent === 'arena' || agent === 'anthropic') return agentConnections.service.answer(prompt, instructions, images);
+  if (agentConnections.service.supports(agent)) return agentConnections.service.answer(prompt, instructions, images);
   if (!agent) throw needs(nl() ? "Connect Claude Code or Codex first so I can answer." : 'Connect Claude Code or Codex first, then I can answer.', 'connect');
   if (agent === 'codex') {
     const account = await chatgpt.status().catch(() => null);
@@ -434,7 +434,7 @@ async function fixIt(question, before) {
     const account = await chatgpt.status().catch(() => null);
     if (!account?.ready) throw needs(nl() ? "Sign in with ChatGPT once so Codex can fix it." : 'Sign in with ChatGPT once, then Codex can fix it.', 'login');
     raw = await chatgpt.fixInFolder(project.cwd, FIX_RULES() + '\n\n' + prompt, images, 'read-only');
-  } else if (agent === 'arena' || agent === 'anthropic') {
+  } else if (agentConnections.service.supports(agent)) {
     if (!selected || fs.realpathSync(selected) !== fs.realpathSync(project.cwd)) throw new Error('Select this project in Project Mode first, then ask again.');
     const listing = await ai.listProjectFiles();
     if (!listing.ok) throw new Error(listing.error || 'The project could not be read.');
@@ -456,7 +456,7 @@ async function fixIt(question, before) {
   const changes = (await Promise.all((Array.isArray(plan?.changes) ? plan.changes : []).slice(0, 3).map(async c => {
     const full = insideProject(project, c?.file), find = String(c?.find ?? ''), replace = String(c?.replace ?? '');
     if (!full || !find || find === replace || !fs.existsSync(full)) return null;
-    if (agent === 'arena' || agent === 'anthropic') await ai.resolveProjectFile(c.file);
+    if (agentConnections.service.supports(agent)) await ai.resolveProjectFile(c.file);
     if (!insideProject(project, path.relative(project.cwd, fs.realpathSync(full)))) return null;
     const text = fs.readFileSync(full, 'utf8').split('\r\n').join('\n');
     if (text.split(find).length !== 2) return null; // must be there exactly once

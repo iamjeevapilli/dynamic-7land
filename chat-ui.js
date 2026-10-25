@@ -95,7 +95,7 @@
   // Which AI answers: the ones connected in Dynamic7land → Verbindingen (Claude Code → Claude, Codex → Codex).
   // { agents: [{ id, name }], current } — null until asked. Two connected: a little switch in the top bar.
   let aiState = null;
-  const AI_DOT = { claudecode: '#d97757', codex: '#3b82f6', arena: '#a78bfa', anthropic: '#d97757' };
+  const AI_DOT = { claudecode: '#d97757', codex: '#3b82f6', arena: '#a78bfa', anthropic: '#d97757', openrouter: '#60a5fa', ollama: '#34d399' };
   const refreshAi = () => api.buddyAi?.().then(n => { if (JSON.stringify(n) !== JSON.stringify(aiState)) { aiState = n; render(); } }).catch(() => {});
   // Dutch or English, like the rest of the island (Instellingen → Taal)
   const WORDS = {

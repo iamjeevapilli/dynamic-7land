@@ -459,7 +459,7 @@ T.en.services = 'Service setup';
 T.nl.services = 'Diensten instellen';
 T.en.sub.services = 'Your name, Spotify and optional services';
 T.nl.sub.services = 'Je naam, Spotify en optionele diensten';
-T.en.providers = T.nl.providers = 'Claude & Arena';
+T.en.providers = T.nl.providers = 'AI connections';
 T.en.sub.providers = T.nl.sub.providers = 'Accounts, API keys and request routing';
 const t = () => T[lang];
 // the slide-in plays once when you open a tab; a refresh of the same page must not replay it (that looked like flicker)
@@ -619,7 +619,7 @@ function drawAi() {
   const codex = !on('codex') ? row('codex', 'Codex', esc(t().aiOff), connect, false)
     : g.ready ? row('codex', 'Codex', esc(t().gptIn(g.email, g.plan)), `<button class="btn ghost" data-ai="logout">${t().logout}</button>${ok}`, true)
     : row('codex', 'Codex', esc(loggingIn ? t().loggingIn : t().aiCodexOut), loggingIn ? `<button class="btn ghost" data-ai="cancel">${t().cancel}</button>` : `<button class="btn main" data-ai="login">${t().login}</button>`, false);
-  const route = directAI?.provider && directAI.provider !== 'off' ? `<div class="card service-card"><h2>${directAI.provider === 'arena' ? 'Arena API' : 'Claude API'}</h2><p>${directAI.active ? 'Selected for desktop chat and projects. Use Test connection to verify access.' : 'Selected, but setup or API access is incomplete.'}</p><p class="muted">${esc(directAI.model)}</p><button class="btn main" data-goto="providers">Manage connection</button></div>` : `<p><button class="btn main" data-goto="providers">Connect Claude or Arena</button></p>`;
+  const route = directAI?.provider && directAI.provider !== 'off' ? `<div class="card service-card"><h2>${esc(directAI.providerName || 'AI provider')}</h2><p>${directAI.active ? 'Selected for desktop chat and projects. Use Test connection to verify access.' : 'Selected, but setup or API access is incomplete.'}</p><p class="muted">${esc(directAI.model)}</p><button class="btn main" data-goto="providers">Manage connection</button></div>` : `<p><button class="btn main" data-goto="providers">Set up AI connections</button></p>`;
   paint(route + `<p class="lead">${esc(t().aiHow)}</p><div class="group">${claude}${codex}</div>` + (g.error && on('codex') && !g.ready ? `<div class="tc-ai-error">${esc(g.error)}</div>` : ''), false);
 }
 async function aiAction(fn, ok) {
@@ -758,7 +758,7 @@ function drawConnect() {
       ${status}<button class="switch ${c.on ? 'on' : ''}" data-cx="${c.id}" ${c.available ? '' : 'disabled'} aria-label="${esc(name)}"></button></div>`;
   });
   const agents = cxs.list.map((c, i) => c.soon ? '' : rows[i]).join(''), chats = cxs.list.map((c, i) => c.soon ? rows[i] : '').join('');
-  paint(`<p class="lead">${t().cxHow}</p><p><button class="btn main" data-goto="providers">Set up Claude or Arena</button></p><p class="section">${t().cxAgents}</p><div class="group">${agents}</div>${chats ? `<p class="section">${t().cxChats}</p><div class="group">${chats}</div>` : ''}`, false);
+  paint(`<p class="lead">${t().cxHow}</p><p><button class="btn main" data-goto="providers">Set up AI connections</button></p><p class="section">${t().cxAgents}</p><div class="group">${agents}</div>${chats ? `<p class="section">${t().cxChats}</p><div class="group">${chats}</div>` : ''}`, false);
   $('#connectDot').classList.toggle('on', !cxs.list.some(c => c.on && !c.soon));
 }
 async function toggleConnect(id, on) {
