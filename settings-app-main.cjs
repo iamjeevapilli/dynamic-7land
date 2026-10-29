@@ -135,8 +135,8 @@ ipcMain.handle('settings-app:connect', async (e, req) => {
 // Fork news is local unless the owner explicitly supplies their own GitHub repository.
 const services = require('./services-config.cjs').createStore(app.getPath('userData'));
 const localRelease = () => ({ ok: true, version: app.getVersion(), downloadUrl: '', releases: [{
-  tag: app.getVersion(), name: 'Dynamic 7land 1.1 — Claude and Arena', date: '2026-10-23T00:00:00Z', beta: false, url: '',
-  body: 'Your personal desktop companion, prepared for Jeeva Pilli.\n\n• Desktop island and animated robot with outfits and moods.\n• Claude Code / Codex monitoring, approvals and history.\n• Screen questions, AI chat and project editing.\n• Spotify, clipboard, file tray, notes, focus timer, weather and calendar.\n• Separate Dynamic7land settings, English default and purple accents.\n\nConnect Claude and Arena in Claude & Arena. Configure monitoring in Connections. Configure Spotify in Service setup. Based on TwoCode 1.2.0-beta.1; original credits are included.'
+  tag: app.getVersion(), name: 'Dynamic 7land 1.3 — Local AI and router connections', date: '2026-10-29T00:00:00Z', beta: false, url: '',
+  body: 'Your personal desktop companion, prepared for Jeeva Pilli.\n\n• Desktop island and animated robot with outfits and moods.\n• Claude Code / Codex monitoring, approvals and history.\n• Screen questions, AI chat and reviewed project editing.\n• Ollama setup for local AI without an API key.\n• OmniRoute and FreeLLMAPI connections with Windows setup launchers.\n• OpenRouter free models and optional account connections.\n• Spotify, clipboard, file tray, notes, focus timer, weather and calendar.\n\nOpen AI connections for setup, model loading and a live connection test. Router provider access and quotas still apply. Configure monitoring in Connections and Spotify in Service setup. Original credits are included in the attribution files.'
 }] });
 async function getNews() {
   const repository = services.get().updatesRepository;

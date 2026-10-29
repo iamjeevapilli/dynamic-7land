@@ -1,22 +1,43 @@
 # Dynamic 7land
 
-English Windows desktop island with an animated robot, Claude and Codex session monitoring, screen questions, project editing and everyday desktop tools. **Version 1.2.0**, maintained by Jeeva Pilli.
+English Windows desktop island with an animated robot, Claude and Codex session monitoring, screen questions, project editing and everyday desktop tools. **Version 1.3.0**, maintained by Jeeva Pilli.
 
-Dynamic 7land includes free cloud models through OpenRouter, local AI through Ollama, optional Claude / Codex / Arena connections, encrypted provider-key storage and a complete Windows portable download.
+Dynamic 7land connects to **OmniRoute and FreeLLMAPI**, includes Windows setup launchers, and offers **Ollama local AI without an API key**. OpenRouter free models, optional Claude / Codex / Arena connections, encrypted key storage and the complete Windows portable app remain available.
 
 ## Run on Windows
 
-Download **Dynamic7land-Windows-x64.zip** from the [latest release](https://github.com/iamjeevapilli/dynamic-7land/releases/tag/v1.2.0). Extract the **whole folder** and open **Dynamic7land.exe**. Keep its runtime files together. The portable app does not need a separate Node.js installation.
+Download **Dynamic7land-Windows-x64.zip** from the [latest release](https://github.com/iamjeevapilli/dynamic-7land/releases/tag/v1.3.0). Extract the **whole folder** and open **Dynamic7land.exe**. Keep its runtime files together. The portable app does not need a separate Node.js installation.
 
 Quit any older desktop island instance from its tray menu before starting the new app. The new profile is independent. Use **Ctrl+Alt+T** or the tray icon to show the island. Right-click the tray icon for Settings and Quit.
 
 ## Use free AI
 
-Arena approval is optional. Version 1.2 adds two routes for users who do not want AI API charges. These routes do not unlock every premium model or remove provider limits.
+**If getting an API key is the problem, start with Ollama.** Open **Settings → AI connections → Install Ollama + small model**. Wait for setup to finish, then **Use local AI — no key → Load models → Save connection → Test connection**. You can also open **SETUP-LOCAL-AI.cmd** from the portable folder.
+
+| Connection | Setup included in version 1.3 | Credentials and limits |
+| --- | --- | --- |
+| Ollama | Windows installation, local server startup and a small text-model download; optional vision-model setup | No API key or cloud account; uses your PC's disk, memory and compute |
+| FreeLLMAPI | Official Windows installer download with pinned SHA256 verification; local dashboard, model discovery and connection test | Add usable provider connections in its dashboard; paste its unified connection key into Dynamic 7land |
+| OmniRoute | Node.js installation when needed, pinned npm router installation/startup, local dashboard and connection test | Add eligible providers and configure its free-only routing; paste an endpoint key into Dynamic 7land |
+| OpenRouter direct | Free-model selection and enforced zero price ceilings | OpenRouter key required; free request quotas apply |
+
+Both routers route access that you configure. They do not grant unlimited tokens or make every premium model free. For a free gateway route, enable only eligible free providers and configure spending controls in that router. Its internal fallbacks and billing are outside Dynamic 7land's enforcement. Cloud requests still go to the router's selected upstream provider.
+
+See **[AI-SETUP.md](AI-SETUP.md)** for complete requirements, installer versions, ports, key locations and troubleshooting. External installers and models download only when requested. No private credentials are included. Arena approval is optional.
+
+### Local routers: OmniRoute and FreeLLMAPI
+
+1. Choose **Use FreeLLMAPI** or **Use OmniRoute** in AI connections.
+2. Use its **Install** button and complete the setup window. Keep FreeLLMAPI's Windows app or OmniRoute's PowerShell window running.
+3. Open the router dashboard and add only eligible free provider connections. Copy **FreeLLMAPI's unified API key** from its tray **Copy Key** button, or **OmniRoute's endpoint key** from **Endpoints**.
+4. Paste it into Dynamic 7land's **Connection key from your router** box. Match its current port: FreeLLMAPI desktop defaults to **31415**, Docker/server to **3001**, and OmniRoute to **20128**.
+5. Choose an available model or your configured routing profile, then **Save connection → Test connection**. Saving clears the visible box; **A key is saved** confirms it is retained.
+
+Gateway connections use only a validated port on `127.0.0.1`, bearer-header authentication and `/v1/chat/completions` without redirects. Loading a catalog is separate from a successful live answer. The app explains missing providers, unsupported requests and exhausted quotas rather than silently switching its selected provider.
 
 ### Free cloud models: OpenRouter
 
-1. Open **Settings → AI connections** and choose **Use free cloud models**.
+1. Open **Settings → AI connections** and choose **Use OpenRouter free models**.
 2. Choose **Get a free-model API key**, sign in to OpenRouter and create a key. Keep the account on its free tier; no credit purchase is needed for this setup.
 3. Paste the key in the app. Keep the model as **openrouter/free**, then choose **Save connection → Test connection**.
 4. Use **Load models** if you want to pick an available free model yourself. Only zero-price catalog entries ending in `:free` are listed, plus the free router.
@@ -25,9 +46,9 @@ The app rejects paid model IDs, sets a zero price ceiling for prompt, completion
 
 ### Local AI: Ollama
 
-1. Choose **Download Ollama for Windows** in AI connections and install the official app.
-2. Download a **local** model in Ollama. A small text model such as `llama3.2:1b` uses fewer resources. For screenshot questions, `gemma3:4b` is a vision option if your PC has enough memory; its model download is several GB.
-3. In Dynamic 7land, choose **Use local AI → Load models** and select your downloaded model.
+1. Choose **Install Ollama + small model** in AI connections. It installs Ollama if missing and downloads `llama3.2:1b`. Complete any Windows prompts and wait for the setup result. The official download-page button is also available.
+2. For screenshot questions, **Install Ollama + vision model** downloads `gemma3:4b`, if your PC has enough memory; its model download is several GB.
+3. In Dynamic 7land, choose **Use local AI — no key → Load models** and select your downloaded model.
 4. Choose **Save connection → Test connection**. No API key or cloud subscription is used by this route.
 
 Only downloaded local models are allowed. The app checks the local catalog and model details, rejects cloud models and aliases that point to a remote model, and connects only to `http://127.0.0.1:11434` without following redirects. Text and screenshots sent through this route stay with the Ollama server on your PC. Local models use your computer's resources; response speed and quality depend on the model and hardware. A model that does not support images gives a clear error instead of silently ignoring a screenshot.
@@ -67,7 +88,7 @@ Official setup references: [Arena Claude Code guide](https://platform.arena.ai/d
 | Desktop island and robot | Moods, animations, outfits, notifications and customisation retained |
 | Claude Code / Codex monitoring | Enable local hooks in Connections; restart the agent |
 | Coding approvals, history and usage | Depends on information and controls exposed by the coding agent |
-| Desktop chat and screenshot buddy | Choose OpenRouter free models, local Ollama, a signed-in Claude / Codex account, or Arena / Claude API |
+| Desktop chat and screenshot buddy | Choose OmniRoute / FreeLLMAPI, OpenRouter free models, local Ollama, a signed-in Claude / Codex account, or Arena / Claude API |
 | Word spelling review and summaries | Windows Word required; proposed fixes remain tracked changes for review |
 | Project questions and reviewed edits | Select a project; original editor validation, backup and undo retained |
 | VS Code project integration | Install the included `vscode-editor/dynamic7land-project-editor.vsix`; ID `jeevapilli.project-editor` |
@@ -98,7 +119,7 @@ npm.cmd run build:windows
 
 The portable folder is `dist/Dynamic7land`. For development, run `npm.cmd start` or `npm.cmd run start:settings`. Windows packaging copies the pinned Electron runtime and Codex Windows component, then sets the app icon and executable metadata. The executable is unsigned.
 
-The prepared edition passed **44 automated tests**, source syntax checks and renderer checks using simulated desktop bridges. Native Windows startup, screen capture, Word, notifications and live provider account access still require a Windows smoke test with your own accounts. No live API key was used for these checks.
+The prepared edition passed **54 automated tests**, source syntax checks, renderer flows using the actual provider service, and a real loopback HTTP gateway test. The Windows workflows also parse the PowerShell setup script and build the portable package. Native GUI startup, external installations, screen capture, Word, notifications and live provider account access still require a Windows smoke test with your own accounts. No live API key was used for these checks.
 
 ## Publish your public repository
 
@@ -110,7 +131,7 @@ Install [Git for Windows](https://git-scm.com/downloads/win) and the [GitHub CLI
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\PUBLISH-TO-GITHUB.ps1
 ```
 
-The script uses GitHub's browser sign-in, verifies the account is `iamjeevapilli`, creates a **public** repository, commits and pushes this source, and pushes `v1.2.0`. It stops if the repository already exists or this folder already contains Git history. It never overwrites an existing repository. GitHub Actions then builds and publishes the full Windows ZIP and checksum; inspect the Actions result before treating the release as ready.
+The script uses GitHub's browser sign-in, verifies the account is `iamjeevapilli`, creates a **public** repository, commits and pushes this source, and pushes the tag matching `package.json`. It stops if the repository already exists or this folder already contains Git history. It never overwrites an existing repository. GitHub Actions then builds and publishes the full Windows ZIP and checksum; inspect the Actions result before treating the release as ready.
 
 For subsequent releases, update the package and release-note versions, test, then push a matching `v` tag. Set your repository under **Service setup → Your GitHub releases repository** after publishing, to enable release news in the app.
 

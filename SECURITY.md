@@ -16,3 +16,11 @@ For a vulnerability, use the repository's private vulnerability reporting featur
 OpenRouter requests accept only the free router or available `:free` IDs. Discovery excludes nonzero or missing pricing. Each request has zero price ceilings and no paid model fallbacks or paid plugins. A quota or availability error stops the request.
 
 Ollama uses only the fixed IPv4 loopback server. Redirects, cloud model names, remote metadata and models that are not downloaded are rejected. The local route does not read or send saved provider keys. Image requests require model vision support. The same project file validation, reviewed edits, backups and undo paths apply to both new providers.
+
+## Local gateways and setup
+
+OmniRoute and FreeLLMAPI use distinct encrypted connection keys. Provider credentials are configured in the external router, not imported into Dynamic 7land. These connections target only `127.0.0.1` on a validated port, use bearer headers and refuse redirects. They cannot be configured as arbitrary remote URLs; changing a port changes the project connection fingerprint. Gateway errors redact the active connection key. Model and routing overrides from request payloads are not forwarded.
+
+Gateway software can forward prompts, screenshots and project text to cloud providers. Its connections, pricing and fallback behavior are controlled by its own settings. Dynamic 7land's OpenRouter zero-price safeguards do not apply inside another router; a gateway is not labelled as guaranteed free or local inference. Use only eligible free upstream connections and enforce spending limits in that router for a free setup.
+
+Setup is opt-in through explicit buttons or CMD launchers. Only the trusted local Settings page can trigger the allowlisted actions. No renderer-provided command, path or URL is executed. PowerShell execution-policy bypass is limited to the launched process for the shipped setup script; no persistent execution-policy setting is changed. Ollama and Node.js installation use official Windows Package Manager IDs. FreeLLMAPI's installer URL, version and SHA256 are pinned and verified before execution. OmniRoute uses a pinned npm package with its required upstream install scripts. No router, model or provider credentials are silently installed/configured when the desktop app starts.
