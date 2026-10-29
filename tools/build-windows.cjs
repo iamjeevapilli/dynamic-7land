@@ -24,7 +24,10 @@ async function main() {
   }
   await brand(path.join(out, 'electron.exe'), path.join(out, 'Dynamic7land.exe'), path.join(root, 'assets', 'icon.ico'));
   fs.unlinkSync(path.join(out, 'electron.exe'));
-  for (const file of ['README.md', 'READ-ME-FIRST.txt', 'CREDITS.md', 'LICENSE-DYNAMIC7LAND.txt']) fs.copyFileSync(path.join(root, file), path.join(out, file));
+  for (const file of ['README.md', 'READ-ME-FIRST.txt', 'AI-SETUP.md', 'CREDITS.md', 'LICENSE-DYNAMIC7LAND.txt']) fs.copyFileSync(path.join(root, file), path.join(out, file));
+  for (const [name, tool] of Object.entries({ 'SETUP-LOCAL-AI': 'ollama', 'SETUP-FREELLMAPI': 'freellmapi', 'SETUP-OMNIROUTE': 'omniroute' })) {
+    fs.writeFileSync(path.join(out, name + '.cmd'), '@echo off\r\ncd /d "%~dp0"\r\npowershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File "%~dp0resources\\app\\AI-SETUP.ps1" -Tool ' + tool + '\r\npause\r\n');
+  }
   fs.writeFileSync(path.join(out, 'Dynamic7land-Settings.cmd'), '@echo off\r\ncd /d "%~dp0"\r\nstart "" "Dynamic7land.exe" --settings\r\n');
   fs.writeFileSync(path.join(out, 'CHECK-WINDOWS.cmd'), '@echo off\r\nsetlocal\r\ncd /d "%~dp0"\r\nset ELECTRON_RUN_AS_NODE=1\r\n"Dynamic7land.exe" "resources\\app\\check-windows.cjs"\r\npause\r\n');
   console.log('Portable build: ' + out);

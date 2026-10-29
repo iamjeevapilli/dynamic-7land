@@ -1,17 +1,20 @@
-DYNAMIC 7LAND 1.2 — FREE CLOUD AND LOCAL AI
+DYNAMIC 7LAND 1.3 - LOCAL AI, OMNIROUTE AND FREELLMAPI
 
 1. Extract the complete ZIP with Extract All.
 2. Open the extracted Dynamic7land folder.
-3. Open Dynamic7land.exe. Windows may show the name as Dynamic7land (Application).
-4. Open Settings → AI connections.
+3. Open Dynamic7land.exe. Windows may show Dynamic7land with type Application.
+4. Open Settings > AI connections.
 
-FREE CLOUD: Choose Use free cloud models. Get a free OpenRouter key using the button, paste it in the app, keep openrouter/free, save and test. Only free model routes are allowed. Quotas and model availability still apply. No credit purchase or Arena approval is needed for this setup.
+NO API KEY? Choose Install Ollama + small model. Complete the installer prompts and wait for the setup window to finish. Choose Use local AI - no key > Load models, select llama3.2:1b, then Save connection > Test connection. You can also run SETUP-LOCAL-AI.cmd. A model uses your PC's memory, disk and compute. Optional vision setup needs several GB and enough memory for screenshots.
 
-LOCAL AI: Install Ollama with the official download button and download a local model. Choose Use local AI → Load models, select it, save and test. No API key or AI API fees. Download size, memory use and speed depend on the model. Screenshot questions need a local vision model such as gemma3:4b. Cloud models are blocked in this route.
+FREELLMAPI: Choose Install FreeLLMAPI, or run SETUP-FREELLMAPI.cmd. This downloads and verifies the official Windows installer. Open that app and add eligible free provider connections in its dashboard. Copy its unified key from its tray Copy Key button, paste it into Dynamic 7land's FreeLLMAPI connection and match its current port (normally 31415). Keep auto, save and test. Keep the router app running.
 
-Your existing Claude, Codex, Arena and Claude API connections are optional and follow those services' account limits. Sign in to ChatGPT for Codex through AI & Chat.
+OMNIROUTE: Choose Install / start OmniRoute, or run SETUP-OMNIROUTE.cmd. Setup installs supported Node.js if needed, installs the pinned router and starts it. Keep the window open. In its dashboard, configure only eligible free provider connections and spending controls. Copy an Endpoints key into Dynamic 7land's OmniRoute connection, match its port (normally 20128), select your model/combo, save and test.
 
-To show the notch, right-click the robot icon near the Windows clock → Open island. Choose Settings from the same menu to reopen configuration. Dynamic7land-Settings.cmd also opens Settings directly. Quit an older instance before starting an updated version.
+Routers do not supply unlimited access or unlock all paid platforms. Provider credentials and quotas still apply. Their own settings control upstream billing and fallback. Ollama local models need no API key or provider account.
 
-See README.md for setup and feature limits. Original credits and license notices are in CREDITS.md and upstream-notices.
-Never put API keys or passwords in a public issue or repository.
+Existing OpenRouter free models, Claude, Codex, Arena and Claude API remain available under their own access limits. A saved key box clears for privacy: A key is saved means it is retained. Do not create new keys just because the visible box is empty.
+
+To show the notch: right-click the robot near the Windows clock > Open island. Click the chat bubble to talk. Settings and Quit are in the same tray menu. Dynamic7land-Settings.cmd opens Settings directly. Quit an older instance before starting an update.
+
+Read AI-SETUP.md for requirements, ports, key locations and troubleshooting. Original credits and license notices remain in the attribution files. Never share passwords or full keys in public issues or chat.

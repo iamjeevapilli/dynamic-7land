@@ -177,3 +177,85 @@ test('offline local AI gives setup guidance and unknown providers cannot fall th
   await assert.rejects(f.service.apiRequest({ provider: 'unknown', ready: true }, '/responses', { input: 'Hello' }), /Unsupported AI provider/);
   assert.equal(f.calls.length, 1);
 });
+
+for (const [provider, defaultPort] of [['omniroute', 20128], ['freellmapi', 31415]]) {
+  test(provider + ' keeps its own encrypted connection key and configurable loopback port', async t => {
+    const f = fixture(t, url => url.includes('/models') ? { data: [{ id: 'auto', name: 'Configured router' }] } : { choices: [{ message: { content: 'Router answer' }, finish_reason: 'stop' }] });
+    f.service.set({ provider: 'openrouter', key: 'another-saved-test-key' });
+    const empty = f.service.set({ provider });
+    assert.equal(empty.hasKey, false); assert.equal(empty.active, false);
+    assert.equal(empty.gatewayPorts[provider], defaultPort); assert.equal(empty.localGateway, true);
+    assert.equal(empty.freeOnly, false); assert.equal(empty.local, false);
+    const state = f.service.set({ key: token, gatewayPort: '3001' });
+    assert.equal(state.gatewayEndpoints[provider], 'http://127.0.0.1:3001/v1');
+    assert.equal(JSON.stringify(state).includes(token), false);
+    assert.equal(fs.readFileSync(path.join(f.directory, 'provider-connections.json'), 'utf8').includes(token), false);
+    const first = f.service.resolve();
+    f.service.set({ key: '', gatewayPort: 3002, baseUrl: 'https://example.invalid/v1' });
+    assert.equal(f.service.resolve().key, token); assert.notEqual(first.fingerprint, f.service.resolve().fingerprint);
+    assert.deepEqual(await f.service.models(), [{ id: 'auto', name: 'Configured router' }]);
+    assert.equal(f.calls[0].url, 'http://127.0.0.1:3002/v1/' + (provider === 'freellmapi' ? 'models?available=true' : 'models'));
+    assert.equal(await f.service.answer('Hello'), 'Router answer');
+    assert.equal(f.calls[1].headers.Authorization, 'Bearer ' + token);
+    assert.equal(f.calls[1].redirect, 'error');
+    assert.equal(f.calls[1].body.provider, undefined);
+    for (const invalid of [0, -1, 65536, 3.5, 'http://elsewhere', '3001/path', '3001?key=secret', '3001\n', '', null]) {
+      assert.throws(() => f.service.set({ gatewayPort: invalid }), /gateway port/);
+      assert.equal(f.service.publicConfig().gatewayPorts[provider], 3002);
+    }
+    f.service.set({ clearKey: true }); assert.equal(f.service.resolve().ready, false);
+    assert.equal(f.service.publicConfig().keyStatus.openrouter, true);
+  });
+
+  test(provider + ' preserves screenshots, project schemas and conversation context without accepting routing overrides', async t => {
+    const f = fixture(t, () => ({ choices: [{ message: { content: '{"summary":"Ready"}' }, finish_reason: 'stop' }] }));
+    f.service.set({ provider, key: token, model: 'my-free-profile' });
+    const config = f.service.resolve(), schema = { type: 'object', properties: { summary: { type: 'string' } } };
+    const { id } = await f.service.apiRequest(config, '/conversations', {});
+    await f.service.apiRequest(config, '/responses', { conversation: id, model: 'unselected-model', models: ['another-route'], plugins: [{ id: 'web' }], input: [{ role: 'user', content: [
+      { type: 'input_text', text: 'Review this screenshot.' }, { type: 'input_image', image_url: 'data:image/png;base64,aGVsbG8=' }
+    ] }], instructions: 'Review only', text: { format: { schema } } });
+    const call = f.calls[0];
+    assert.equal(call.body.model, 'my-free-profile'); assert.equal(call.body.models, undefined); assert.equal(call.body.plugins, undefined);
+    assert.equal(call.body.messages[0].role, 'system'); assert.equal(call.body.messages[1].content[1].image_url.url, 'data:image/png;base64,aGVsbG8=');
+    assert.deepEqual(call.body.response_format.json_schema.schema, schema); assert.equal(call.body.stream, false);
+    await f.service.apiRequest(config, '/responses', { conversation: id, input: 'Follow up' });
+    assert.equal(f.calls[1].body.messages.length, 3); assert.equal(f.calls[1].body.messages[1].role, 'assistant');
+  });
+
+  test(provider + ' explains missing routers, wrong connection keys and exhausted providers without switching routes', async t => {
+    for (const [status, expected] of [[401, /connection key/], [429, /busy or at their limits/], [422, /supports this request/], [503, /available provider/]]) {
+      const f = fixture(t, () => ({ _status: status, error: { message: 'Rejected ' + token } }));
+      f.service.set({ provider, key: token });
+      await assert.rejects(f.service.answer('Hello'), error => expected.test(error.message) && !error.message.includes(token));
+      assert.equal(f.calls.length, 1); assert.ok(f.calls[0].url.startsWith('http://127.0.0.1:'));
+    }
+    const f = fixture(t, () => { throw new Error('Internal authorization ' + token); });
+    f.service.set({ provider, key: token });
+    await assert.rejects(f.service.answer('Hello'), error => /Start the router on this PC/.test(error.message) && !error.message.includes(token));
+    assert.equal(f.calls.length, 1);
+  });
+}
+
+test('the gateway adapter works with a real loopback HTTP server and refuses redirects', async t => {
+  const http = require('node:http'), seen = [];
+  const server = http.createServer(async (request, response) => {
+    let body = ''; for await (const part of request) body += part;
+    seen.push({ url: request.url, auth: request.headers.authorization, body: body ? JSON.parse(body) : null });
+    response.setHeader('Content-Type', 'application/json');
+    if (request.url.includes('models')) response.end(JSON.stringify({ data: [{ id: 'auto' }] }));
+    else if (seen.at(-1).body.messages.at(-1).content[0].text === 'redirect') { response.writeHead(302, { Location: 'https://example.invalid/never-follow' }); response.end('{}'); }
+    else response.end(JSON.stringify({ choices: [{ message: { content: 'Local HTTP response' }, finish_reason: 'stop' }] }));
+  });
+  await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
+  t.after(() => new Promise(resolve => server.close(resolve)));
+  const f = fixture(t);
+  const service = createProviderService({ directory: f.directory, safeStorage: f.safeStorage, env: {} });
+  service.set({ provider: 'freellmapi', key: token, gatewayPort: server.address().port });
+  assert.deepEqual(await service.models(), [{ id: 'auto', name: 'auto' }]);
+  assert.equal(await service.answer('Hello'), 'Local HTTP response');
+  assert.equal(seen[0].url, '/v1/models?available=true'); assert.equal(seen[1].url, '/v1/chat/completions');
+  assert.equal(seen[1].auth, 'Bearer ' + token);
+  await assert.rejects(service.answer('redirect'), /could not be reached/);
+  assert.equal(seen.length, 3);
+});

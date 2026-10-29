@@ -1,9 +1,11 @@
 'use strict';
 const fs = require('node:fs'), path = require('node:path'), crypto = require('node:crypto');
-const ROOTS = Object.freeze({ arena: 'https://api.arena.ai/v1', anthropic: 'https://api.anthropic.com/v1', openrouter: 'https://openrouter.ai/api/v1', ollama: 'http://127.0.0.1:11434' });
-const PROVIDER_NAMES = Object.freeze({ arena: 'Arena API', anthropic: 'Claude API', openrouter: 'OpenRouter — free models only', ollama: 'Ollama — local models' });
-const DEFAULT_MODELS = { arena: 'coding-router-preview', openrouter: 'openrouter/free' };
-const ENDPOINTS = { arena: ['/models', '/responses'], anthropic: ['/models', '/messages'], openrouter: ['/models', '/chat/completions'], ollama: ['/api/tags', '/api/show', '/api/chat'] };
+const GATEWAY_PORTS = Object.freeze({ omniroute: 20128, freellmapi: 31415 });
+const gateway = provider => Object.hasOwn(GATEWAY_PORTS, provider);
+const ROOTS = Object.freeze({ arena: 'https://api.arena.ai/v1', anthropic: 'https://api.anthropic.com/v1', openrouter: 'https://openrouter.ai/api/v1', ollama: 'http://127.0.0.1:11434', omniroute: 'http://127.0.0.1:20128/v1', freellmapi: 'http://127.0.0.1:31415/v1' });
+const PROVIDER_NAMES = Object.freeze({ arena: 'Arena API', anthropic: 'Claude API', openrouter: 'OpenRouter — free models only', ollama: 'Ollama — local models', omniroute: 'OmniRoute — local gateway', freellmapi: 'FreeLLMAPI — local gateway' });
+const DEFAULT_MODELS = { arena: 'coding-router-preview', openrouter: 'openrouter/free', omniroute: 'auto', freellmapi: 'auto' };
+const ENDPOINTS = { arena: ['/models', '/responses'], anthropic: ['/models', '/messages'], openrouter: ['/models', '/chat/completions'], ollama: ['/api/tags', '/api/show', '/api/chat'], omniroute: ['/models', '/chat/completions'], freellmapi: ['/models?available=true', '/chat/completions'] };
 const supports = provider => Object.hasOwn(ROOTS, provider);
 const freeModel = model => model === 'openrouter/free' || /^[a-z0-9][a-z0-9._/-]*:free$/i.test(model);
 const cloudModel = model => /(?:[:/-])cloud(?:$|[:/-])/i.test(model);
@@ -12,12 +14,20 @@ function createProviderService({ directory, safeStorage, fetch: request = global
   const file = path.join(directory, 'provider-connections.json');
   const historyFile = path.join(directory, 'provider-conversations.json');
   const write = (target, value) => { fs.mkdirSync(directory, { recursive: true }); const temp = target + '.tmp'; fs.writeFileSync(temp, JSON.stringify(value, null, 2), { mode: 0o600 }); fs.renameSync(temp, target); };
-  const raw = () => ({ provider: 'off', model: '', arenaAccess: 'api', keys: {}, ...read(file, {}) });
+  const raw = () => ({ provider: 'off', model: '', arenaAccess: 'api', keys: {}, gatewayPorts: {}, ...read(file, {}) });
+  function gatewayPort(provider, config = raw()) {
+    const port = config.gatewayPorts?.[provider] ?? GATEWAY_PORTS[provider];
+    if (!gateway(provider) || !Number.isInteger(port) || port < 1 || port > 65535) throw new Error('Enter a gateway port between 1 and 65535.');
+    return port;
+  }
+  function root(provider, config = raw()) {
+    return gateway(provider) ? 'http://127.0.0.1:' + gatewayPort(provider, config) + '/v1' : ROOTS[provider];
+  }
   function key(provider, config = raw()) {
     if (provider === 'ollama' || !supports(provider)) return '';
     const encrypted = config.keys?.[provider];
     if (encrypted) { try { return safeStorage.decryptString(Buffer.from(encrypted, 'base64')); } catch { return ''; } }
-    const variable = { arena: 'ARENA_API_KEY', anthropic: 'ANTHROPIC_API_KEY', openrouter: 'OPENROUTER_API_KEY' }[provider];
+    const variable = { arena: 'ARENA_API_KEY', anthropic: 'ANTHROPIC_API_KEY', openrouter: 'OPENROUTER_API_KEY', omniroute: 'OMNIROUTE_API_KEY', freellmapi: 'FREELLMAPI_API_KEY' }[provider];
     return variable ? env[variable] || '' : '';
   }
   function ready(config) {
@@ -28,7 +38,9 @@ function createProviderService({ directory, safeStorage, fetch: request = global
   function publicConfig() {
     const config = raw();
     return { provider: config.provider, providerName: PROVIDER_NAMES[config.provider] || 'Existing account setup', model: config.model, arenaAccess: config.arenaAccess,
-      hasKey: !!key(config.provider, config), active: ready(config), freeOnly: config.provider === 'openrouter', local: config.provider === 'ollama',
+      hasKey: !!key(config.provider, config), active: ready(config), freeOnly: config.provider === 'openrouter', local: config.provider === 'ollama', localGateway: gateway(config.provider),
+      gatewayPorts: Object.fromEntries(Object.keys(GATEWAY_PORTS).map(provider => [provider, gatewayPort(provider, config)])),
+      gatewayEndpoints: Object.fromEntries(Object.keys(GATEWAY_PORTS).map(provider => [provider, root(provider, config)])),
       keyStatus: Object.fromEntries(Object.keys(ROOTS).map(provider => [provider, !!key(provider, config)])) };
   }
   function set(patch) {
@@ -42,6 +54,12 @@ function createProviderService({ directory, safeStorage, fetch: request = global
     const access = patch.arenaAccess ?? config.arenaAccess;
     if (!['api', 'claude-code-only'].includes(access)) throw new Error('Invalid Arena access type.');
     const next = { ...config, provider, model, arenaAccess: access, keys: { ...config.keys } };
+    if (patch.gatewayPort !== undefined) {
+      const rawPort = String(patch.gatewayPort);
+      if (!gateway(provider) || !rawPort || rawPort.length > 5 || /[^0-9]/.test(rawPort)) throw new Error('Enter a gateway port between 1 and 65535.');
+      next.gatewayPorts = { ...config.gatewayPorts, [provider]: Number(patch.gatewayPort) };
+      gatewayPort(provider, next);
+    }
     if (patch.clearKey === true && supports(provider)) delete next.keys[provider];
     else if (typeof patch.key === 'string' && patch.key.trim()) {
       const token = patch.key.trim();
@@ -56,8 +74,8 @@ function createProviderService({ directory, safeStorage, fetch: request = global
     const config = raw(); if (!supports(config.provider)) return null;
     const token = key(config.provider, config);
     return { provider: config.provider, name: PROVIDER_NAMES[config.provider], key: token, ready: ready(config), model: config.model,
-      source: config.provider === 'ollama' ? 'local-model' : 'personal-api-key',
-      fingerprint: crypto.createHash('sha256').update(config.provider + ':' + config.model + ':' + token).digest('hex').slice(0, 20) };
+      source: config.provider === 'ollama' ? 'local-model' : gateway(config.provider) ? 'local-gateway' : 'personal-api-key',
+      fingerprint: crypto.createHash('sha256').update(config.provider + ':' + config.model + ':' + root(config.provider, config) + ':' + token).digest('hex').slice(0, 20) };
   }
   async function http(provider, endpoint, method = 'GET', body) {
     if (!supports(provider) || !ENDPOINTS[provider].includes(endpoint)) throw new Error('Unsupported provider endpoint.');
@@ -66,10 +84,10 @@ function createProviderService({ directory, safeStorage, fetch: request = global
     if (provider === 'anthropic') Object.assign(headers, { 'x-api-key': token, 'anthropic-version': '2023-06-01' });
     else if (provider !== 'ollama') headers.Authorization = 'Bearer ' + token;
     let response;
-    try { response = await request(ROOTS[provider] + endpoint, { method, headers, redirect: 'error', signal: AbortSignal.timeout(provider === 'ollama' ? 300000 : 180000), ...(body ? { body: JSON.stringify(body) } : {}) }); }
+    try { response = await request(root(provider) + endpoint, { method, headers, redirect: 'error', signal: AbortSignal.timeout(method === 'GET' ? 15000 : provider === 'ollama' ? 300000 : 180000), ...(body ? { body: JSON.stringify(body) } : {}) }); }
     catch (error) {
       if (error.name === 'TimeoutError') throw new Error(provider === 'ollama' ? 'The local model timed out. Try a smaller model for this PC.' : 'The AI request timed out.');
-      throw new Error(provider === 'ollama' ? 'Ollama could not be reached on this PC. Open Ollama, download a local model, then choose Load models.' : 'The provider could not be reached. Check your internet connection.');
+      throw new Error(gateway(provider) ? PROVIDER_NAMES[provider] + ' could not be reached. Start the router on this PC and match the port shown in its dashboard or tray.' : provider === 'ollama' ? 'Ollama could not be reached on this PC. Open Ollama, download a local model, then choose Load models.' : 'The provider could not be reached. Check your internet connection.');
     }
     let data; try { data = await response.json(); } catch { throw new Error('The AI provider returned an invalid response.'); }
     if (!response.ok || data.error) {
@@ -77,6 +95,9 @@ function createProviderService({ directory, safeStorage, fetch: request = global
       if (provider === 'openrouter' && response.status === 429) throw new Error('The free model quota is reached or the model is busy. Try later, choose another free model, or use local Ollama. Paid fallback is blocked.');
       const message = String(data.error?.message || (typeof data.error === 'string' ? data.error : '') || data.message || 'Provider request failed');
       const hidden = (token ? message.replaceAll(token, '[hidden]') : message).replace(/\b(?:sk-[A-Za-z0-9_-]+|Bearer\s+\S+)/g, '[hidden]').slice(0, 350);
+      if (gateway(provider) && response.status === 401) throw new Error('The router rejected its connection key. Copy the ' + (provider === 'freellmapi' ? 'unified key from FreeLLMAPI\'s tray or Keys page' : 'endpoint key from OmniRoute\'s Endpoints page') + ' and save it in AI connections.');
+      if (gateway(provider) && response.status === 429) throw new Error('The router\'s available providers are busy or at their limits. Check its dashboard or retry later. ' + hidden);
+      if (gateway(provider) && [402, 403, 422, 503].includes(response.status)) throw new Error('Check the router dashboard for an available provider and a model that supports this request. ' + hidden + ' (HTTP ' + response.status + ')');
       throw new Error(hidden + ' (HTTP ' + response.status + ')');
     }
     return data;
@@ -85,7 +106,7 @@ function createProviderService({ directory, safeStorage, fetch: request = global
   async function localModels() { const data = await http('ollama', '/api/tags'); return (Array.isArray(data.models) ? data.models : []).filter(localEntry); }
   async function models(provider = raw().provider) {
     if (provider === 'ollama') return (await localModels()).map(m => ({ id: String(m.name || m.model), name: String(m.name || m.model) }));
-    const data = await http(provider, '/models');
+    const data = await http(provider, provider === 'freellmapi' ? '/models?available=true' : '/models');
     let list = Array.isArray(data.data) ? data.data : [];
     if (provider === 'openrouter') list = list.filter(m => freeModel(m.id || '') && m.pricing && ['prompt', 'completion'].every(field => m.pricing[field] !== undefined && Number(m.pricing[field]) === 0) && Object.values(m.pricing).every(value => value !== null && Number.isFinite(Number(value)) && Number(value) === 0));
     const found = list.map(m => ({ id: String(m.id || ''), name: String(m.display_name || m.name || m.id || '') })).filter(m => m.id);
@@ -106,14 +127,14 @@ function createProviderService({ directory, safeStorage, fetch: request = global
     if (typeof text !== 'string' || !text.trim()) throw new Error('The provider returned no readable answer. Try a different available model.');
     return { status: incomplete ? 'incomplete' : 'completed', output: [{ type: 'message', role: 'assistant', content: [{ type: 'output_text', text }] }] };
   };
-  async function freeRequest(config, input, instructions, schema, limit) {
+  async function compatibleRequest(config, input, instructions, schema, limit) {
     const converted = messages(input);
-    if (config.provider === 'openrouter') {
-      if (!freeModel(config.model)) throw new Error('Paid models are blocked. Choose openrouter/free or an available :free model.');
+    if (config.provider === 'openrouter' || gateway(config.provider)) {
+      if (config.provider === 'openrouter' && !freeModel(config.model)) throw new Error('Paid models are blocked. Choose openrouter/free or an available :free model.');
       const chats = converted.map(m => ({ role: m.role, content: m.content.map(c => c.type === 'text' ? c : { type: 'image_url', image_url: { url: 'data:' + c.source.media_type + ';base64,' + c.source.data } }) }));
       if (instructions) chats.unshift({ role: 'system', content: instructions });
-      const data = await http('openrouter', '/chat/completions', 'POST', { model: config.model, messages: chats, stream: false, max_tokens: limit,
-        provider: { allow_fallbacks: false, require_parameters: true, max_price: { prompt: 0, completion: 0, request: 0, image: 0 } },
+      const data = await http(config.provider, '/chat/completions', 'POST', { model: config.model, messages: chats, stream: false, max_tokens: limit,
+        ...(config.provider === 'openrouter' ? { provider: { allow_fallbacks: false, require_parameters: true, max_price: { prompt: 0, completion: 0, request: 0, image: 0 } } } : {}),
         ...(schema ? { response_format: { type: 'json_schema', json_schema: { name: 'dynamic7land_response', strict: true, schema } } } : {}) });
       const choice = data.choices?.[0];
       return responseText(choice?.message?.content, choice?.finish_reason === 'length');
@@ -134,15 +155,15 @@ function createProviderService({ directory, safeStorage, fetch: request = global
     if (!config || !supports(config.provider)) throw new Error('Unsupported AI provider.');
     if (endpoint === '/conversations') { const id = 'dynamic7land_' + crypto.randomUUID(); const histories = read(historyFile, {}); histories[id] = []; write(historyFile, histories); return { id }; }
     if (endpoint !== '/responses') throw new Error('This provider does not support ' + endpoint + '.');
-    if (!config.ready) throw new Error(config.provider === 'openrouter' ? 'Add your free OpenRouter key and choose openrouter/free in AI connections, then save and test.' : config.provider === 'ollama' ? 'Download a local model in Ollama, then choose Load models in AI connections and save.' : 'Finish AI Connections setup first. Restricted Arena keys support the interactive Claude Code app only.');
+    if (!config.ready) throw new Error(gateway(config.provider) ? 'Start your router, copy its connection key into AI connections, choose an available model, then save and test.' : config.provider === 'openrouter' ? 'Add your free OpenRouter key and choose openrouter/free in AI connections, then save and test.' : config.provider === 'ollama' ? 'Download a local model in Ollama, then choose Load models in AI connections and save.' : 'Finish AI Connections setup first. Restricted Arena keys support the interactive Claude Code app only.');
     const histories = read(historyFile, {}), previous = body.conversation ? histories[body.conversation] || [] : [];
     const input = [...previous, ...(Array.isArray(body.input) ? body.input : [{ role: 'user', content: body.input || '' }])];
-    const schema = body.text?.format?.schema, instructions = String(body.instructions || ''), limit = Math.min(Number(body.max_output_tokens) || 4096, 16384);
+    const schema = body.text?.format?.schema, instructions = String(body.instructions || ''), limit = Math.max(1, Math.min(Math.floor(Number(body.max_output_tokens)) || 4096, 16384));
     let result;
     if (config.provider === 'arena') {
       const { conversation, store, ...payload } = body;
       result = await http('arena', '/responses', 'POST', { ...payload, input, store: false });
-    } else if (config.provider === 'openrouter' || config.provider === 'ollama') result = await freeRequest(config, input, instructions, schema, limit);
+    } else if (config.provider === 'openrouter' || config.provider === 'ollama' || gateway(config.provider)) result = await compatibleRequest(config, input, instructions, schema, limit);
     else {
       const data = await http('anthropic', '/messages', 'POST', { model: config.model, max_tokens: limit,
         system: instructions + (schema ? '\nReturn only valid JSON matching this schema: ' + JSON.stringify(schema) : ''), messages: messages(input) });

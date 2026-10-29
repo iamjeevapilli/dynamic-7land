@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.3.0 — 2026-10-29
+
+- Add local OmniRoute and FreeLLMAPI connections for chat, screenshot questions, Word analysis and reviewed project requests.
+- Use separate encrypted router keys, validated loopback ports, available-model discovery and connection tests. Explain router startup, authentication, capability and quota errors.
+- Add Windows setup launchers for Ollama and local text/vision models, the checksum-verified FreeLLMAPI Windows installer, and a pinned OmniRoute npm installation with supported Node.js setup.
+- Distinguish local inference from local gateways that forward to cloud providers. Document provider credentials, free quotas and billing enforcement limits through third-party routers.
+- Clarify saved-key behavior and include a complete setup guide in the portable download.
+- Add renderer, real loopback HTTP and trusted Windows-launcher regression tests, plus PowerShell syntax checks in Windows workflows.
+
 ## 1.2.0 — 2026-10-25
 
 - Add OpenRouter free models with a free router, zero-price model discovery, paid-model blocking and zero provider price ceilings.
