@@ -18,6 +18,9 @@ jobs:
       - run: npm.cmd ci --include=optional
       - run: npm.cmd test
       - run: npm.cmd run check:syntax
+      - name: Check Windows setup script
+        shell: powershell
+        run: .\tools\check-powershell.ps1
       - run: npm.cmd run build:windows
       - uses: actions/upload-artifact@v4
         with:

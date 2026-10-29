@@ -7,7 +7,7 @@ on:
       tag:
         description: Release tag matching package.json
         required: true
-        default: v1.2.0
+        default: v1.3.0
 concurrency:
   group: windows-release-${{ inputs.tag || github.ref_name }}
   cancel-in-progress: false
@@ -39,6 +39,9 @@ jobs:
       - run: npm.cmd ci --include=optional
       - run: npm.cmd test
       - run: npm.cmd run check:syntax
+      - name: Check Windows setup script
+        shell: powershell
+        run: .\tools\check-powershell.ps1
       - run: npm.cmd run build:windows
       - name: Create portable archive and checksum
         shell: pwsh
