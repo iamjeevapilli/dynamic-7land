@@ -1,11 +1,11 @@
-Dynamic 7land 1.4 simplifies AI setup around **Arena** while retaining the desktop island, animated robot, Claude/Codex session monitoring and everyday desktop tools.
+Dynamic 7land 1.4.1 makes your saved **Arena connection easier to open**.
 
-- Removed the added OpenRouter, Ollama, OmniRoute, FreeLLMAPI and direct Claude API connections, setup cards and router/model installers.
-- Arena is the default connection. **Save and open Claude via Arena** saves the key before launching interactive Claude Code. Its key is passed in the child environment, never on the command line.
-- Free-router setup defaults to **Interactive Claude Code only** and hides the direct API test. **Workspace with API access** enables direct chat and project requests, subject to Arena permission, pricing and quotas. A free-router key cannot unlock those API features.
-- Existing encrypted Arena keys survive the update. Removed-provider selections switch to Arena setup; unused retired key entries are removed from the app's connection file. Conversation history and existing account selection are retained. Other Windows apps and remote credentials are not changed.
-- Key storage remains encrypted. **A key is saved** confirms retention after the visible input clears. No private credentials are included in the public app.
+- In the notch, select **Arena → Open Arena chat window**. Your saved key is reused automatically. No PowerShell commands or repeated key entry are needed.
+- The launcher opens a separate terminal with keyboard input, starts in the dedicated **Dynamic7land-Chat** folder and uses **Manual mode**, with prompts before commands and file edits. Complete any first-run theme or folder prompt, then ask your question beside Claude Code's `>` prompt.
+- Interactive-only keys show the launch button instead of an unsupported notch API input. Free-router keys still work only in interactive Claude Code. API-enabled Arena workspaces and existing Claude/Codex account chat retain their normal access requirements.
+- Keys remain encrypted in your Windows profile and are passed only in the child environment. No private credential is included in the public package or startup commands. A created window is distinct from a verified AI response.
+- Claude/Codex monitoring and desktop tools remain. Arena's model access, prices and quotas still apply; Manual mode does not grant unlimited or free API access.
 
-Download **Dynamic7land-Windows-x64.zip**, quit the old tray instance and choose **Extract All into a fresh folder**. Open **Dynamic7land.exe → Settings → AI connections**, paste your own Arena key, choose its access type and follow **AI-SETUP.md**. Do not mix the old and new portable folders.
+Download **Dynamic7land-Windows-x64.zip**, quit the old Dynamic 7land tray instance, choose **Extract All into a fresh folder** and open **Dynamic7land.exe**. Your existing encrypted Arena key remains in your Windows profile. Open the notch, select Arena and click **Open Arena chat window**. If a key has not been saved, enter it privately in Settings → AI connections first.
 
-Automated storage, routing, migration, access-restriction and renderer tests passed. The Windows workflow checks helper-script syntax and builds the portable ZIP and checksum. Native desktop behavior and live Arena access require testing on your PC. The executable is unsigned. Browser conversation monitoring and the missing optional companion backend remain unavailable. Original credits and license notices are retained.
+Regression tests cover key storage, IPC isolation, the launch button, API routing and migration. A Windows-only smoke test starts a real console and checks keyboard input, working directory and inherited synthetic environment values without using an AI key. Native GUI appearance and live provider access still require testing on your PC. The executable is unsigned. Credits and license notices remain included.

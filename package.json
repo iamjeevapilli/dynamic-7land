@@ -1,7 +1,7 @@
 {
   "name": "dynamic-7land",
-  "version": "1.4.0",
-  "description": "Dynamic 7land \u2014 English Windows desktop island with Arena, Claude and Codex session monitoring and reviewed project tools.",
+  "version": "1.4.1",
+  "description": "Dynamic 7land — English Windows desktop island with Arena, Claude and Codex session monitoring and reviewed project tools.",
   "main": "main.js",
   "scripts": {
     "test": "node --test",

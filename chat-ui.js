@@ -94,7 +94,8 @@
   let context = null, messages = [], waiting = false, visible = false, holdUntil = 0, zoom = false, readFrom = false, toEnd = false;
   // Which AI answers: the ones connected in Dynamic7land → Verbindingen (Claude Code → Claude, Codex → Codex).
   // { agents: [{ id, name }], current } — null until asked. Two connected: a little switch in the top bar.
-  let aiState = null;
+  let aiState = null, arenaOpening = false, arenaLaunchMessage = '';
+  const interactiveArena = () => aiState?.current === 'arena' && !!aiState?.arenaInteractiveOnly;
   const AI_DOT = { claudecode: '#d97757', codex: '#3b82f6', arena: '#a78bfa' };
   const refreshAi = () => api.buddyAi?.().then(n => { if (JSON.stringify(n) !== JSON.stringify(aiState)) { aiState = n; render(); } }).catch(() => {});
   // Dutch or English, like the rest of the island (Instellingen → Taal)
@@ -122,6 +123,7 @@
     const keep = root.querySelector('input')?.value || '', focused = document.activeElement === root.querySelector('input'), wasTop = root.querySelector('.cr-msgs')?.scrollTop || 0;
     const photo = context?.picture ? `<img src="${esc(context.picture)}" data-do="zoom" alt="" title="${L().seen}">` : '';
     const pill = context ? `<div class="cr-ctx"><i></i>${photo}<span>${esc(context.app || L().part)}</span><button type="button" data-do="forget" title="${L().forget}">✕</button></div>` : '';
+    const arenaOnly = interactiveArena();
     const agents = aiState?.agents || [];
     const via = !aiState ? '' : agents.length > 1
       ? `<div class="cr-pick" title="${L().which}">${agents.map(a => `<button type="button" data-ai="${a.id}" class="${a.id === aiState.current ? 'on' : ''}" style="--c:${AI_DOT[a.id]}"><i></i>${esc(a.name)}</button>`).join('')}</div>`
@@ -154,10 +156,11 @@
       return `<div class="cr-ai${fresh}">${html}</div>`;
     }).join('') + (waiting ? `<div class="cr-wait"><i></i><i></i><i></i><span>${esc(waitingType ? L().typing(waitingType) : waitingFix ? L().fixing(context?.project || '') : L().thinking)}</span></div>` : '');
     const chipList = context?.project ? [L().chips[0], ['fix', L().fixChip], ...L().chips.slice(1, 3)] : L().chips;
-    const chips = !messages.length && !waiting ? `<div class="cr-chips">${chipList.map(([k, label]) => `<button type="button" data-kind="${k}" class="${k === 'fix' ? 'cr-hot' : ''}">${label}</button>`).join('')}</div>` : '';
-    const placeholder = messages.length ? L().more : context ? L().about : L().any;
-    root.innerHTML = `${ctx}${shot}<div class="cr-msgs">${msgs}</div>${chips}
-      <div class="cr-input"><input type="text" maxlength="2000" placeholder="${placeholder}" aria-label="${L().label}"><button type="button" data-do="send" ${waiting ? 'disabled' : ''} aria-label="${L().send}">↑</button></div>`;
+    const chips = !arenaOnly && !messages.length && !waiting ? `<div class="cr-chips">${chipList.map(([k, label]) => `<button type="button" data-kind="${k}" class="${k === 'fix' ? 'cr-hot' : ''}">${label}</button>`).join('')}</div>` : '';
+    const arenaPanel = arenaOnly ? `<div class="cr-ai"><p><b>Arena chat opens in its own window.</b></p><p>Your free-router key works in interactive Claude Code. Dynamic 7land shows its activity in the notch. Desktop API chat needs an API-enabled Arena workspace.</p><button type="button" class="cr-act" data-do="arena-launch" ${arenaOpening ? 'disabled' : ''}>${arenaOpening ? 'Opening Arena chat…' : 'Open Arena chat window'}</button><button type="button" class="cr-fix" data-do="arena-setup">AI connections</button><p role="status">${esc(arenaLaunchMessage)}</p></div>` : '';
+    const placeholder = arenaOnly ? 'Use Open Arena chat window above' : messages.length ? L().more : context ? L().about : L().any;
+    root.innerHTML = `${ctx}${shot}<div class="cr-msgs">${arenaOnly ? arenaPanel : msgs}</div>${chips}
+      <div class="cr-input"><input type="text" maxlength="2000" ${arenaOnly ? 'disabled' : ''} placeholder="${placeholder}" aria-label="${L().label}"><button type="button" data-do="send" ${waiting || arenaOnly ? 'disabled' : ''} aria-label="${L().send}">↑</button></div>`;
     const input = root.querySelector('input'); input.value = keep; if (focused) input.focus();
     // a new answer: show it from its start (with your question above it), not its end
     const list = root.querySelector('.cr-msgs'), mine = [...list.querySelectorAll('.cr-me')].pop();
@@ -167,7 +170,7 @@
   }
 
   async function ask(kind, text) {
-    if (waiting) return;
+    if (waiting || interactiveArena()) return;
     const label = text || (kind === 'fix' ? L().fixChip : L().chips.find(([k]) => k === kind)?.[1])?.replace(/^\S+\s/, '') || '';
     const history = messages.filter(m => !m.error).map(m => ({ who: m.who, text: String(m.text || '').slice(0, 2000) })).slice(-8);
     messages.push({ who: 'me', text: label, fresh: true }); waiting = true; waitingFix = kind === 'fix'; render();
@@ -193,6 +196,14 @@
     if (act === 'new') { messages = []; render(); input?.focus(); }
     if (act === 'forget') { context = null; zoom = false; api.buddyForget?.(); render(); }
     if (act === 'setup') api.settingsOpen?.('connect');
+    if (act === 'arena-setup') api.settingsOpen?.('providers');
+    if (act === 'arena-launch') {
+      if (arenaOpening) return;
+      arenaOpening = true; arenaLaunchMessage = ''; render();
+      try { const result = await api.openArenaChat(); arenaLaunchMessage = result?.message || result?.error || (result?.ok ? 'Arena chat window opened. Type your question there.' : 'Open AI connections to complete Arena setup.'); }
+      catch { arenaLaunchMessage = 'The Arena window could not be opened. Open AI connections and try again.'; }
+      finally { arenaOpening = false; render(); }
+    }
     if (b.dataset.ai) { aiState = await api.buddyUseAi?.(b.dataset.ai) || aiState; render(); }
     if (act === 'login') {
       b.disabled = true; b.textContent = L().browser;

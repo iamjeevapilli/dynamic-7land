@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.4.1 — 2026-11-01
+
+- Open a separate interactive terminal with real keyboard input instead of ignoring console handles. Encode startup commands and verify the bootstrap reports a child process.
+- Reuse the saved Arena key, open the dedicated Dynamic7land-Chat folder and start Claude Code in Manual mode.
+- Show Open Arena chat window in the notch for interactive-only keys and disable unsupported direct API input there. Preserve API-enabled and existing-account chat.
+- Add launch-only notch IPC isolation tests, renderer regression coverage and a Windows console smoke test.
+
 ## 1.4.0 — 2026-11-01
 
 - Simplify AI connections around Arena and retain existing Claude/Codex account connections and monitoring.

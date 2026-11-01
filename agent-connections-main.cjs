@@ -1,6 +1,7 @@
 'use strict';
 const fs = require('node:fs'), path = require('node:path'), os = require('node:os');
 const { spawn } = require('node:child_process');
+const { openTerminal } = require('./terminal-launcher.cjs');
 const { app, ipcMain, safeStorage, shell } = require('electron');
 const service = require('./provider-connections.cjs').createProviderService({ directory: app.getPath('userData'), safeStorage });
 function claudeExecutable() {
@@ -15,7 +16,7 @@ function codexExecutable() {
   return '';
 }
 const status = () => ({ ...service.publicConfig(), claudeInstalled: !!claudeExecutable(), codexInstalled: !!codexExecutable() });
-const trusted = e => { try { const u = new URL(e.senderFrame?.url || e.sender.getURL()); return u.protocol === 'file:' && path.resolve(require('node:url').fileURLToPath(u)) === path.join(__dirname, 'settings-app.html'); } catch { return false; } };
+const trusted = (e, page = 'settings-app.html') => { try { const u = new URL(e.senderFrame?.url || e.sender.getURL()); return u.protocol === 'file:' && path.resolve(require('node:url').fileURLToPath(u)) === path.join(__dirname, page); } catch { return false; } };
 const psQuote = s => "'" + s.replace(/'/g, "''") + "'";
 function terminal(command, extraEnv = {}) {
   if (process.platform !== 'win32') throw new Error('This launcher requires Windows.');
@@ -26,11 +27,9 @@ function terminal(command, extraEnv = {}) {
       if (name === 'ANTHROPIC_API_KEY' || /^ANTHROPIC_DEFAULT_(?:OPUS|SONNET|HAIKU)_MODEL$/.test(name) || /^CLAUDE_CODE_USE_/.test(name)) delete env[name];
     }
   }
-  const child = spawn('powershell.exe', ['-NoLogo','-NoProfile','-NoExit','-Command',command], { env, windowsHide: false, detached: true, stdio: 'ignore', shell: false });
-  return new Promise((resolve, reject) => {
-    child.once('error', () => reject(new Error('PowerShell could not start. Check that Windows PowerShell is available.')));
-    child.once('spawn', () => { child.unref(); resolve({ ok: true, launched: true }); });
-  });
+  const cwd = path.join(os.homedir(), 'Dynamic7land-Chat');
+  fs.mkdirSync(cwd, { recursive: true });
+  return openTerminal(command, { env, cwd, spawn });
 }
 async function action(kind) {
   if (typeof kind !== 'string') throw new Error('Unknown connection action.');
@@ -40,7 +39,9 @@ async function action(kind) {
   const claude = claudeExecutable();
   if (['claude-login','claude-open','claude-arena'].includes(kind)) {
     if (!claude) throw new Error('Install Claude Code first using Install Claude Code.');
-    return terminal('& ' + psQuote(claude) + (kind === 'claude-login' ? ' auth login' : ''), kind === 'claude-arena' ? service.claudeEnvironment() : {});
+    const arena = kind === 'claude-arena';
+    const result = await terminal("Write-Host 'Dynamic 7land - " + (arena ? 'Arena chat' : 'Claude Code') + "' -ForegroundColor Cyan\n& " + psQuote(claude) + (kind === 'claude-login' ? ' auth login' : ' --permission-mode default'), arena ? service.claudeEnvironment() : {});
+    return { ...result, message: arena ? 'Arena chat window opened. Choose its theme or folder prompt if shown, then type your question beside > in Claude Code. Manual mode asks before commands and edits. A reply verifies the connection.' : 'Claude Code window opened. Complete any setup shown there.' };
   }
   if (kind === 'codex-open') { const codex = codexExecutable(); if (!codex) throw new Error('The Codex runtime is missing. Run INSTALL-AI.cmd from the setup folder.'); return terminal('& ' + psQuote(codex)); }
   throw new Error('Unknown connection action.');
@@ -48,4 +49,13 @@ async function action(kind) {
 for (const [channel, fn] of Object.entries({ get: status, set: patch => { const config = service.set(patch); app.emit('dynamic7land-provider-changed', service.supports(config.provider) ? config.provider : ''); return status(); }, models: provider => service.models(provider), test: async () => ({ answer: await service.answer('Reply only with: Connection successful.', 'This is a connection test.') }), action })) {
   ipcMain.handle('agent-connections:' + channel, async (event, payload) => { if (!trusted(event)) return { ok: false, error: 'Access denied.' }; try { return { ok: true, ...(channel === 'models' ? { models: await fn(payload) } : await fn(payload)) }; } catch (error) { return { ok: false, error: error.message }; } });
 }
+// The notch receives a launch-only action; provider settings and key access
+// remain restricted to the separate Settings page.
+ipcMain.handle('agent-connections:open-arena', async event => {
+  if (!trusted(event, 'mascot.html')) return { ok: false, error: 'Access denied.' };
+  try {
+    if (service.publicConfig().provider !== 'arena') throw new Error('Select Arena in AI connections first.');
+    return await action('claude-arena');
+  } catch (error) { return { ok: false, error: error.message }; }
+});
 module.exports = { service, claudeExecutable, codexExecutable, status };
