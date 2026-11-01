@@ -43,7 +43,7 @@ test('one Arena launcher saves the pasted key before opening Claude and retains 
   await f.click('[data-provider-command="launch-arena"]');
   assert.equal(f.actions.length, 1); assert.equal(f.actions[0].action, 'claude-arena'); assert.equal(f.actions[0].key, secret);
   assert.equal(f.find('key').value, ''); assert.match(f.find('key-help').textContent, /A key is saved/);
-  assert.match(f.find('result').textContent, /terminal to verify/); assert.equal(f.calls.length, 0);
+  assert.match(f.find('result').textContent, /reply verifies the connection/); assert.equal(f.calls.length, 0);
   await f.click('[data-provider-command="save"]'); assert.equal(f.service.resolve().key, secret);
   await f.click('[data-provider-command="clear"]'); assert.equal(f.service.publicConfig().hasKey, false);
 });

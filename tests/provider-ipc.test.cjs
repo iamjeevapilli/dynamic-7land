@@ -14,7 +14,7 @@ test('only the local settings page can read provider status, change routing or l
   const event = file => ({ senderFrame: { url: file }, sender: { getURL: () => file } });
   const valid = event(pathToFileURL(path.join(root,'settings-app.html')).href + '?tab=providers');
   for (const url of ['https://example.com/settings-app.html', pathToFileURL(path.join(root,'mascot.html')).href, 'file:///untrusted/settings-app.html']) {
-    for (const [channel, handler] of handlers) { const value = await handler(event(url), channel.endsWith(':action') ? 'arena-website' : { provider: 'off' }); assert.equal(value.ok, false); assert.equal(value.error, 'Access denied.'); }
+    for (const [channel, handler] of handlers) { if (channel === 'agent-connections:open-arena' && url.endsWith('/mascot.html')) continue; const value = await handler(event(url), channel.endsWith(':action') ? 'arena-website' : { provider: 'off' }); assert.equal(value.ok, false); assert.equal(value.error, 'Access denied.'); }
   }
   assert.equal(opened.length, 0);
   assert.equal((await handlers.get('agent-connections:get')(valid)).ok, true);
@@ -34,7 +34,7 @@ test('Arena launches pass secrets only in the child environment and retired inst
   const safeStorage = { isEncryptionAvailable: () => true, encryptString: s => Buffer.from(s), decryptString: b => b.toString() };
   const electron = { app: { getPath: () => directory, emit: () => {} }, ipcMain: { handle: (name, fn) => handlers.set(name, fn) }, safeStorage, shell: { openExternal: async url => opened.push(url) } };
   const context = { require: name => name === 'electron' ? electron : name === 'node:os' ? { ...os, homedir: () => directory } : name === 'node:child_process' ? { spawn: (file, args, options) => {
-    spawned.push({ file, args, options }); const child = new EventEmitter(); child.unref = () => {}; queueMicrotask(() => child.emit('spawn')); return child;
+    spawned.push({ file, args, options }); const child = new EventEmitter(); child.stdout = new EventEmitter(); child.stderr = new EventEmitter(); child.kill = () => {}; queueMicrotask(() => { child.stdout.emit('data', Buffer.from('Dynamic7landTerminal:1234')); child.emit('close', 0); }); return child;
   } } : name.startsWith('./') ? require(path.join(root, name)) : require(name),
   module: { exports: {} }, __dirname: root, process: { platform: 'win32', env: { PATH: '', ELECTRON_RUN_AS_NODE: '1', ANTHROPIC_API_KEY: 'conflicting-key', ANTHROPIC_DEFAULT_SONNET_MODEL: 'other-model', CLAUDE_CODE_USE_VERTEX: '1' } }, URL, Buffer };
   vm.runInNewContext(fs.readFileSync(path.join(root, 'agent-connections-main.cjs'), 'utf8'), context);
@@ -48,6 +48,15 @@ test('Arena launches pass secrets only in the child environment and retired inst
   assert.equal(call.options.env.ANTHROPIC_AUTH_TOKEN, secret); assert.equal(call.options.env.ANTHROPIC_MODEL, 'workspace-model');
   for (const name of ['ANTHROPIC_API_KEY', 'ANTHROPIC_DEFAULT_SONNET_MODEL', 'CLAUDE_CODE_USE_VERTEX']) assert.equal(call.options.env[name], undefined);
   assert.equal(JSON.stringify(call.args).includes(secret), false); assert.equal(call.args.includes('-ExecutionPolicy'), false);
+  const bootstrap = Buffer.from(call.args.at(-1), 'base64').toString('utf16le');
+  assert.match(bootstrap, /Start-Process/); assert.doesNotMatch(bootstrap, /NoNewWindow|RedirectStandardInput|test-only-arena-token/);
+  const inner = Buffer.from(bootstrap.match(/-NoExit -EncodedCommand ([A-Za-z0-9+/=]+)/)[1], 'base64').toString('utf16le');
+  assert.match(inner, /--permission-mode default/); assert.match(inner, /Dynamic7land-Chat/);
+  const notch = { senderFrame: { url: pathToFileURL(path.join(root, 'mascot.html')).href } };
+  assert.equal((await handlers.get('agent-connections:open-arena')(foreign)).ok, false);
+  assert.equal((await handlers.get('agent-connections:open-arena')(notch)).ok, true);
+  assert.equal(spawned.length, 2);
+  for (const name of ['get', 'set', 'models', 'test', 'action']) assert.equal((await handlers.get('agent-connections:' + name)(notch, { provider: 'off' })).error, 'Access denied.');
   for (const action of ['setup-ollama', 'setup-ollama-vision', 'setup-freellmapi', 'setup-omniroute', 'omniroute-dashboard', 'freellmapi-dashboard', 'openrouter-keys', 'ollama-download', 'setup-omniroute; anything', ['claude-arena'], {}, null]) assert.equal((await act(valid, action)).ok, false);
-  assert.equal(spawned.length, 1); assert.deepEqual(opened, []);
+  assert.equal(spawned.length, 2); assert.deepEqual(opened, []);
 });
