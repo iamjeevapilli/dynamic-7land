@@ -17,12 +17,16 @@ function codexExecutable() {
 const status = () => ({ ...service.publicConfig(), claudeInstalled: !!claudeExecutable(), codexInstalled: !!codexExecutable() });
 const trusted = e => { try { const u = new URL(e.senderFrame?.url || e.sender.getURL()); return u.protocol === 'file:' && path.resolve(require('node:url').fileURLToPath(u)) === path.join(__dirname, 'settings-app.html'); } catch { return false; } };
 const psQuote = s => "'" + s.replace(/'/g, "''") + "'";
-function terminal(command, extraEnv = {}, localScript = false) {
+function terminal(command, extraEnv = {}) {
   if (process.platform !== 'win32') throw new Error('This launcher requires Windows.');
   const env = { ...process.env, ...extraEnv }; delete env.ELECTRON_RUN_AS_NODE;
   // A personal Anthropic key must not override the explicitly selected Arena route.
-  if (extraEnv.ANTHROPIC_AUTH_TOKEN) delete env.ANTHROPIC_API_KEY;
-  const child = spawn('powershell.exe', ['-NoLogo','-NoProfile', ...(localScript ? ['-ExecutionPolicy','Bypass'] : []), '-NoExit','-Command',command], { env, windowsHide: false, detached: true, stdio: 'ignore', shell: false });
+  if (extraEnv.ANTHROPIC_AUTH_TOKEN) {
+    for (const name of Object.keys(env)) {
+      if (name === 'ANTHROPIC_API_KEY' || /^ANTHROPIC_DEFAULT_(?:OPUS|SONNET|HAIKU)_MODEL$/.test(name) || /^CLAUDE_CODE_USE_/.test(name)) delete env[name];
+    }
+  }
+  const child = spawn('powershell.exe', ['-NoLogo','-NoProfile','-NoExit','-Command',command], { env, windowsHide: false, detached: true, stdio: 'ignore', shell: false });
   return new Promise((resolve, reject) => {
     child.once('error', () => reject(new Error('PowerShell could not start. Check that Windows PowerShell is available.')));
     child.once('spawn', () => { child.unref(); resolve({ ok: true, launched: true }); });
@@ -30,24 +34,9 @@ function terminal(command, extraEnv = {}, localScript = false) {
 }
 async function action(kind) {
   if (typeof kind !== 'string') throw new Error('Unknown connection action.');
-  const setupTools = { 'setup-ollama': 'ollama', 'setup-ollama-vision': 'ollama-vision', 'setup-freellmapi': 'freellmapi', 'setup-omniroute': 'omniroute' };
-  if (Object.hasOwn(setupTools, kind)) {
-    const result = await terminal('& ' + psQuote(path.join(__dirname, 'AI-SETUP.ps1')) + ' -Tool ' + setupTools[kind], {}, true);
-    return { ...result, message: 'Setup opened in PowerShell. Finish any installer prompts and wait for its result. Return here to load models, save and test; opening setup does not mean installation has finished.' };
-  }
-  if (kind === 'omniroute-dashboard' || kind === 'freellmapi-dashboard') {
-    const provider = kind.replace('-dashboard', '');
-    await shell.openExternal(new URL(service.publicConfig().gatewayEndpoints[provider]).origin);
-    return { ok: true, message: 'The local dashboard was opened. If it does not load, start the router and check its port in AI connections.' };
-  }
-  if (kind === 'freellmapi-releases') { await shell.openExternal('https://github.com/tashfeenahmed/freellmapi/releases/latest'); return { ok: true }; }
-  if (kind === 'omniroute-guide') { await shell.openExternal('https://github.com/cheaper-inference/OmniRoute#-quick-start'); return { ok: true }; }
   if (kind === 'install-claude') return terminal('irm https://claude.ai/install.ps1 | iex');
   if (kind === 'arena-website') { await shell.openExternal('https://arena.ai/agent'); return { ok: true }; }
-  if (kind === 'openrouter-keys') { await shell.openExternal('https://openrouter.ai/settings/keys'); return { ok: true }; }
-  if (kind === 'ollama-download') { await shell.openExternal('https://ollama.com/download/windows'); return { ok: true }; }
   if (kind === 'arena-keys') { await shell.openExternal('https://platform.arena.ai'); return { ok: true }; }
-  if (kind === 'claude-console') { await shell.openExternal('https://platform.claude.com'); return { ok: true }; }
   const claude = claudeExecutable();
   if (['claude-login','claude-open','claude-arena'].includes(kind)) {
     if (!claude) throw new Error('Install Claude Code first using Install Claude Code.');
