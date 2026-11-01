@@ -1,4 +1,4 @@
-DYNAMIC 7LAND 1.4 - ARENA CONNECTION
+DYNAMIC 7LAND 1.4.1 - ARENA CONNECTION
 
 1. Quit an older Dynamic 7land from its tray menu.
 2. Download Dynamic7land-Windows-x64.zip, choose Extract All into a fresh folder and keep every runtime file together.
@@ -6,7 +6,7 @@ DYNAMIC 7LAND 1.4 - ARENA CONNECTION
 4. Right-click the robot near the clock > Settings > AI connections.
 5. Paste your Arena key into Arena API key and keep model coding-router-preview, or select a model enabled for your workspace.
 
-FREE-ROUTER KEY: Choose Interactive Claude Code only (free-router). If Claude Code is missing, click Install Claude Code, complete installation and Refresh status. Choose Save and open Claude via Arena. Ask a question in its terminal to verify the connection. Enable Claude Code in Connections for island session monitoring.
+FREE-ROUTER KEY: Choose Interactive Claude Code only (free-router). If Claude Code is missing, click Install Claude Code, complete installation and Refresh status. Choose Open Arena chat window. The saved key is reused automatically. In the new Claude Code window, finish any theme/folder prompt, then ask a question beside > to verify the connection. No PowerShell commands are needed. Claude opens in the dedicated Dynamic7land-Chat folder in Manual mode. Enable Claude Code in Connections for island session monitoring.
 
 API-ENABLED WORKSPACE: Choose Workspace with API access > Save connection > Test connection. A successful test says Connection successful. Arena returned an answer. API usage follows Arena's workspace pricing and quotas.
 
@@ -19,3 +19,5 @@ Open island: right-click the tray robot > Open island, then click the chat bubbl
 The added alternative providers and their installers have been removed. Claude/Codex monitoring and existing account connections remain. Extract into a fresh folder to avoid mixing old setup launchers with this update. Other Windows apps and models are not uninstalled.
 
 Read AI-SETUP.md for setup and troubleshooting. Credits and license notices remain in the attribution files.
+
+NEXT TIME: In the notch, select Arena > Open Arena chat window. For an interactive-only key, the notch shows this button instead of a direct API input. A live answer verifies the connection; opening a window alone does not.

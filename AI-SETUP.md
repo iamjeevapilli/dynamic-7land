@@ -1,4 +1,4 @@
-# Arena setup for Dynamic 7land 1.4
+# Arena setup for Dynamic 7land 1.4.1
 
 1. Download the Windows ZIP from the [latest release](https://github.com/iamjeevapilli/dynamic-7land/releases/latest) and choose **Extract All** into a fresh folder.
 2. Quit the old desktop island from its tray menu, then open **Dynamic7land.exe** from the new folder.
@@ -10,9 +10,17 @@
 
 Choose **Interactive Claude Code only (free-router)**. If Claude Code is missing, choose **Install Claude Code**, complete its official installer in PowerShell, then **Refresh status**.
 
-Choose **Save and open Claude via Arena**. This saves the key before launching a terminal with Arena's gateway environment. Ask a short question in that terminal to verify it. The launcher opening alone is not proof that the key works. Under **Connections**, enable Claude Code and restart the coding session to show its activity in the island.
+Choose **Open Arena chat window**. This saves the key before launching a terminal with Arena's gateway environment. Ask a short question in that terminal to verify it. The launcher opening alone is not proof that the key works. Under **Connections**, enable Claude Code and restart the coding session to show its activity in the island.
 
 Arena free-router keys work only in interactive Claude Code. Direct desktop chat, screen questions, Word analysis, print mode and project API requests require API-enabled workspace access. Changing the access dropdown cannot grant access the workspace does not have. The direct test is hidden for interactive-only access.
+
+## Open your saved Arena connection next time
+
+Open Dynamic 7land's notch chat, select Arena and click **Open Arena chat window**. The app reuses its encrypted saved key and opens Claude Code in the dedicated `Dynamic7land-Chat` folder. The free-router notch input is disabled so it cannot be mistaken for the terminal chat. You can also use **Open Arena chat window** in AI connections.
+
+Claude starts in **Manual mode**, with normal prompts before commands or edits. This avoids using auto mode's classifier for those approvals; Arena still controls usage, quotas and prices. Opening a window does not prove the key can answer. Complete any theme or folder prompt in the new window, then type a normal question beside `>` and wait for a reply. Do not type launch commands into Claude Code's chat.
+
+The launcher uses a visible PowerShell window with its own keyboard input and an encoded startup command. The key is passed only through the child environment and is never written into that command. No manual PowerShell environment setup is needed.
 
 ## Workspace with API access
 

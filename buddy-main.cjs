@@ -239,7 +239,11 @@ function currentAgent() {
   if (chosen === null) { try { chosen = JSON.parse(fs.readFileSync(choiceFile(), 'utf8')).agent || ''; } catch { chosen = ''; } }
   const list = connectedAgents(); return list.includes(chosen) ? chosen : list[0] || null;
 }
-function aiInfo() { return { agents: connectedAgents().map(id => ({ id, name: AGENTS[id] })), current: currentAgent() }; }
+function aiInfo() {
+  const connection = agentConnections.service.publicConfig();
+  return { agents: connectedAgents().map(id => ({ id, name: AGENTS[id] })), current: currentAgent(),
+    arenaInteractiveOnly: connection.provider === 'arena' && connection.arenaAccess === 'claude-code-only' };
+}
 function useAgent(id) {
   if (!AGENTS[id]) return aiInfo();
   chosen = id; try { fs.writeFileSync(choiceFile(), JSON.stringify({ agent: id })); } catch {}

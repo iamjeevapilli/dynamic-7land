@@ -1,6 +1,6 @@
 # Dynamic 7land
 
-English Windows desktop island with an animated robot, **Arena connection**, Claude and Codex session monitoring, screen questions, reviewed project editing and everyday desktop tools. **Version 1.4.0**, maintained by Jeeva Pilli.
+English Windows desktop island with an animated robot, **Arena connection**, Claude and Codex session monitoring, screen questions, reviewed project editing and everyday desktop tools. **Version 1.4.1**, maintained by Jeeva Pilli.
 
 ## Download and open
 
@@ -14,10 +14,10 @@ Open **Settings → AI connections**. Arena is the default connection; paste you
 
 | Arena key access | What to choose in Dynamic 7land | How to verify |
 | --- | --- | --- |
-| Free-router / interactive Claude Code only | **Interactive Claude Code only (free-router)**, then **Save and open Claude via Arena** | Type a question in the Claude Code terminal that opens |
+| Free-router / interactive Claude Code only | **Interactive Claude Code only (free-router)**, then **Open Arena chat window** | Type a question in the Claude Code terminal that opens |
 | Workspace with API access | **Workspace with API access → Save connection → Test connection** | The app says **Connection successful. Arena returned an answer.** |
 
-For the interactive route, choose **Install Claude Code** first if the app says it is missing. Complete the official installer in PowerShell and choose **Refresh status**, then **Save and open Claude via Arena**. That button saves your key before starting Claude Code, passes it through the process environment and uses Arena's official gateway settings. Enable **Claude Code** in **Connections** to show its coding-session activity in the island.
+For the interactive route, choose **Install Claude Code** first if the app says it is missing. Complete the official installer in PowerShell and choose **Refresh status**, then **Open Arena chat window**. That button saves your key before starting Claude Code, passes it through the process environment and uses Arena's official gateway settings. Enable **Claude Code** in **Connections** to show its coding-session activity in the island.
 
 **Free-router keys cannot run this app's direct desktop chat, screen questions, Word analysis or project API requests.** Arena restricts them to interactive Claude Code. API-enabled access is required for those direct features, and Arena's pricing and quotas apply. The app does not infer access from a key's prefix or bypass a restriction. The new setup defaults to interactive access and hides the direct test until API access is selected.
 
@@ -28,6 +28,12 @@ Saving clears the visible key box for privacy. **A key is saved** means it is re
 **Open Arena Agent** opens [Arena's agent workspace](https://arena.ai/agent). Website sessions, tools and sandboxes are separate from API access. Dynamic 7land runs on your Windows PC.
 
 Official references: [Arena Claude Code setup](https://platform.arena.ai/docs/claude-code), [Arena Codex setup](https://platform.arena.ai/docs/codex).
+
+## Open Arena from the notch
+
+With an interactive-only Arena key selected, the notch shows **Open Arena chat window** instead of an API chat input. Click it to reuse the key already saved in AI connections. The separate window opens Claude Code in `%USERPROFILE%\Dynamic7land-Chat`, in **Manual mode**, where commands and file edits ask for approval. Answer any first-run theme or folder question, then type an ordinary question beside Claude Code's `>` prompt. No PowerShell commands or repeated key entry are needed.
+
+The window uses its own keyboard/console input. Launch errors are reported in the app, and a created window is not labelled as a verified AI connection. An actual reply verifies access. Manual mode does not change Arena pricing or quotas. The notch monitors the coding session when Claude Code is enabled in **Connections**. Free-router access remains limited to interactive Claude Code; this button does not turn it into a desktop API connection.
 
 ## Existing accounts and desktop features
 
@@ -72,7 +78,7 @@ npm.cmd run build:windows
 
 The portable folder is `dist/Dynamic7land`. For development, use `npm.cmd start` or `npm.cmd run start:settings`. GitHub Actions tests the source, parses the Windows helper scripts, builds the portable app and publishes the ZIP plus SHA256 checksum. The executable is unsigned.
 
-Automated tests exercise encrypted storage, Arena routing, API restrictions, upgrade migration and renderer flows using simulated responses. Native Windows GUI behavior and live Arena access require testing on your PC. No live user key is used by CI. See [BUILD-INFO.json](BUILD-INFO.json) for the verified checks and their limits.
+Automated tests exercise encrypted storage, Arena routing, API restrictions, upgrade migration and renderer flows using simulated responses. A Windows-only test starts a real console and checks keyboard input, its working directory and inherited synthetic environment values without contacting any AI provider. Native Windows GUI behavior and live Arena access require testing on your PC. No live user key is used by CI. See [BUILD-INFO.json](BUILD-INFO.json) for the verified checks and their limits.
 
 The source includes CI, a tagged release workflow and `PUBLISH-TO-GITHUB.ps1` for initial publication to a new repository through GitHub CLI browser sign-in. For this existing public repository, update the version and release notes, verify, then run the publishing workflow with the matching `v` tag. No GitHub password belongs in the source.
 

@@ -1,16 +1,18 @@
 {
   "product": "Dynamic 7land",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "owner": "Jeeva Pilli",
   "target": "Windows x64",
   "baseRelease": "TwoCode 1.2.0-beta.1",
   "verificationDate": "2026-11-01",
   "automatedTests": {
-    "passed": 44,
-    "failed": 0
+    "passed": 46,
+    "failed": 0,
+    "skipped": 1,
+    "host": "Linux; the console-input smoke test runs only in Windows CI"
   },
   "syntaxChecks": {
-    "javascriptAndInlineScripts": 56,
+    "javascriptAndInlineScripts": 59,
     "passed": true
   },
   "rendererChecks": {
@@ -22,7 +24,10 @@
     "savedKeyRetainedAfterInputClears": true,
     "arenaModelDiscoveryAndApiTest": true,
     "restrictedAccessHidesDirectTest": true,
-    "browserLayoutTested": false
+    "browserLayoutTested": false,
+    "notchTerminalLaunchButton": true,
+    "restrictedNotchInputDisabled": true,
+    "existingAndApiChatStillEnabled": true
   },
   "upgradeMigrationTested": true,
   "retiredRoutesRejected": true,
@@ -49,5 +54,14 @@
       "downloadBytes": 162643563
     }
   ],
-  "dependencyVerificationNote": "Runtime and JSDOM pins are unchanged from 1.3.0. Download records above are retained from the earlier verified preparation; package-lock.json includes integrity hashes."
+  "dependencyVerificationNote": "Runtime and JSDOM pins are unchanged from 1.3.0. Download records above are retained from the earlier verified preparation; package-lock.json includes integrity hashes.",
+  "terminalLaunchChecks": {
+    "encodedStartupCommands": true,
+    "noKeyInStartupCommands": true,
+    "bootstrapFailureReported": true,
+    "dedicatedChatFolder": true,
+    "manualPermissionMode": true,
+    "windowsConsoleSmokeTest": "Included in npm test on Windows; checks real console input, cwd and synthetic environment inheritance",
+    "nativeGuiAppearanceTested": false
+  }
 }

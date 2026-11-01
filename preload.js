@@ -144,6 +144,7 @@
     buddyApply: () => ipcRenderer.invoke('buddy:apply'),
     buddyForget: () => ipcRenderer.send('buddy:forget'),
     buddyAi: () => ipcRenderer.invoke('buddy:ai'),
+    openArenaChat: () => ipcRenderer.invoke('agent-connections:open-arena'),
     buddyUseAi: id => ipcRenderer.invoke('buddy:use-ai', id),
     buddyLogin: () => ipcRenderer.invoke('buddy:login'),
     buddyApplyFix: () => ipcRenderer.invoke('buddy:apply-fix'),
