@@ -1,20 +1,21 @@
-DYNAMIC 7LAND 1.3 - LOCAL AI, OMNIROUTE AND FREELLMAPI
+DYNAMIC 7LAND 1.4 - ARENA CONNECTION
 
-1. Extract the complete ZIP with Extract All.
-2. Open the extracted Dynamic7land folder.
-3. Open Dynamic7land.exe. Windows may show Dynamic7land with type Application.
-4. Open Settings > AI connections.
+1. Quit an older Dynamic 7land from its tray menu.
+2. Download Dynamic7land-Windows-x64.zip, choose Extract All into a fresh folder and keep every runtime file together.
+3. Open Dynamic7land.exe. Windows may hide .exe and show type Application.
+4. Right-click the robot near the clock > Settings > AI connections.
+5. Paste your Arena key into Arena API key and keep model coding-router-preview, or select a model enabled for your workspace.
 
-NO API KEY? Choose Install Ollama + small model. Complete the installer prompts and wait for the setup window to finish. Choose Use local AI - no key > Load models, select llama3.2:1b, then Save connection > Test connection. You can also run SETUP-LOCAL-AI.cmd. A model uses your PC's memory, disk and compute. Optional vision setup needs several GB and enough memory for screenshots.
+FREE-ROUTER KEY: Choose Interactive Claude Code only (free-router). If Claude Code is missing, click Install Claude Code, complete installation and Refresh status. Choose Save and open Claude via Arena. Ask a question in its terminal to verify the connection. Enable Claude Code in Connections for island session monitoring.
 
-FREELLMAPI: Choose Install FreeLLMAPI, or run SETUP-FREELLMAPI.cmd. This downloads and verifies the official Windows installer. Open that app and add eligible free provider connections in its dashboard. Copy its unified key from its tray Copy Key button, paste it into Dynamic 7land's FreeLLMAPI connection and match its current port (normally 31415). Keep auto, save and test. Keep the router app running.
+API-ENABLED WORKSPACE: Choose Workspace with API access > Save connection > Test connection. A successful test says Connection successful. Arena returned an answer. API usage follows Arena's workspace pricing and quotas.
 
-OMNIROUTE: Choose Install / start OmniRoute, or run SETUP-OMNIROUTE.cmd. Setup installs supported Node.js if needed, installs the pinned router and starts it. Keep the window open. In its dashboard, configure only eligible free provider connections and spending controls. Copy an Endpoints key into Dynamic 7land's OmniRoute connection, match its port (normally 20128), select your model/combo, save and test.
+A free-router key cannot run direct desktop chat, screen questions or project API requests. Changing the access choice does not grant workspace permission.
 
-Routers do not supply unlimited access or unlock all paid platforms. Provider credentials and quotas still apply. Their own settings control upstream billing and fallback. Ollama local models need no API key or provider account.
+The key box clears after saving. A key is saved means the encrypted key remains stored for your Windows account. Leave the input blank to keep it. No private key is included in this public release.
 
-Existing OpenRouter free models, Claude, Codex, Arena and Claude API remain available under their own access limits. A saved key box clears for privacy: A key is saved means it is retained. Do not create new keys just because the visible box is empty.
+Open island: right-click the tray robot > Open island, then click the chat bubble. Dynamic7land-Settings.cmd opens Settings directly. Ctrl+Alt+T also shows the island.
 
-To show the notch: right-click the robot near the Windows clock > Open island. Click the chat bubble to talk. Settings and Quit are in the same tray menu. Dynamic7land-Settings.cmd opens Settings directly. Quit an older instance before starting an update.
+The added alternative providers and their installers have been removed. Claude/Codex monitoring and existing account connections remain. Extract into a fresh folder to avoid mixing old setup launchers with this update. Other Windows apps and models are not uninstalled.
 
-Read AI-SETUP.md for requirements, ports, key locations and troubleshooting. Original credits and license notices remain in the attribution files. Never share passwords or full keys in public issues or chat.
+Read AI-SETUP.md for setup and troubleshooting. Credits and license notices remain in the attribution files.

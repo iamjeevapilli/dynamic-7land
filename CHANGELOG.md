@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.4.0 — 2026-11-01
+
+- Simplify AI connections around Arena and retain existing Claude/Codex account connections and monitoring.
+- Remove added alternative providers and their local router/model installers.
+- Add Save and open Claude via Arena so the key is saved before launch. Default new keys to interactive-only setup and explain API workspace requirements.
+- Migrate retired selections to Arena, preserve existing encrypted Arena keys and conversations, and remove unused retired key entries.
+- Verify Arena key storage, routing, migration, UI selection and restricted access.
+
 ## 1.3.0 — 2026-10-29
 
 - Add local OmniRoute and FreeLLMAPI connections for chat, screenshot questions, Word analysis and reviewed project requests.

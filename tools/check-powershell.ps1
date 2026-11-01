@@ -1,10 +1,12 @@
 $ErrorActionPreference = 'Stop'
-$setupPath = Join-Path (Split-Path $PSScriptRoot) 'AI-SETUP.ps1'
-$tokens = $null
-$parseErrors = $null
-$null = [System.Management.Automation.Language.Parser]::ParseFile($setupPath, [ref]$tokens, [ref]$parseErrors)
-if ($parseErrors.Count -gt 0) {
-    $parseErrors | ForEach-Object { Write-Error $_.Message }
-    throw 'AI-SETUP.ps1 contains PowerShell syntax errors.'
+$root = Split-Path $PSScriptRoot
+foreach ($name in @('PUBLISH-TO-GITHUB.ps1', 'buddy-helper.ps1', 'buddy-look.ps1', 'volume-watch.ps1', 'windows-ai-access.ps1')) {
+    $tokens = $null
+    $parseErrors = $null
+    $null = [System.Management.Automation.Language.Parser]::ParseFile((Join-Path $root $name), [ref]$tokens, [ref]$parseErrors)
+    if ($parseErrors.Count -gt 0) {
+        $parseErrors | ForEach-Object { Write-Error $_.Message }
+        throw "$name contains PowerShell syntax errors."
+    }
 }
-Write-Host 'Windows AI setup script syntax verified. Installers were not executed.'
+Write-Host 'Windows helper script syntax verified. Scripts were not executed.'

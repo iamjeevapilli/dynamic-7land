@@ -1,7 +1,7 @@
 {
   "name": "dynamic-7land",
-  "version": "1.3.0",
-  "description": "Dynamic 7land — English Windows desktop island with local AI, OmniRoute and FreeLLMAPI gateway connections.",
+  "version": "1.4.0",
+  "description": "Dynamic 7land \u2014 English Windows desktop island with Arena, Claude and Codex session monitoring and reviewed project tools.",
   "main": "main.js",
   "scripts": {
     "test": "node --test",
@@ -17,12 +17,7 @@
     "desktop-assistant",
     "claude",
     "codex",
-    "arena-ai",
-    "ollama",
-    "openrouter",
-    "free-ai",
-    "omniroute",
-    "freellmapi"
+    "arena-ai"
   ],
   "author": "Jeeva Pilli; based on TwoCode by levon-z",
   "license": "ISC",

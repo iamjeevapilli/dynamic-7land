@@ -1,114 +1,67 @@
 # Dynamic 7land
 
-English Windows desktop island with an animated robot, Claude and Codex session monitoring, screen questions, project editing and everyday desktop tools. **Version 1.3.0**, maintained by Jeeva Pilli.
+English Windows desktop island with an animated robot, **Arena connection**, Claude and Codex session monitoring, screen questions, reviewed project editing and everyday desktop tools. **Version 1.4.0**, maintained by Jeeva Pilli.
 
-Dynamic 7land connects to **OmniRoute and FreeLLMAPI**, includes Windows setup launchers, and offers **Ollama local AI without an API key**. OpenRouter free models, optional Claude / Codex / Arena connections, encrypted key storage and the complete Windows portable app remain available.
+## Download and open
 
-## Run on Windows
+Download **Dynamic7land-Windows-x64.zip** from the [latest release](https://github.com/iamjeevapilli/dynamic-7land/releases/latest). Choose **Extract All**, open the extracted Dynamic7land folder and launch **Dynamic7land.exe**. Keep the whole folder together. The portable app needs no separate Node.js installation.
 
-Download **Dynamic7land-Windows-x64.zip** from the [latest release](https://github.com/iamjeevapilli/dynamic-7land/releases/tag/v1.3.0). Extract the **whole folder** and open **Dynamic7land.exe**. Keep its runtime files together. The portable app does not need a separate Node.js installation.
+Quit an older instance from its tray menu before opening this update. Right-click the robot near the Windows clock and choose **Open island**. Click the chat bubble to open chat. The same tray menu contains **Settings** and **Quit**; **Dynamic7land-Settings.cmd** opens Settings directly. **Ctrl+Alt+T** also shows the island.
 
-Quit any older desktop island instance from its tray menu before starting the new app. The new profile is independent. Use **Ctrl+Alt+T** or the tray icon to show the island. Right-click the tray icon for Settings and Quit.
+## Connect Arena
 
-## Use free AI
+Open **Settings → AI connections**. Arena is the default connection; paste your own key into **Arena API key**, keep model **coding-router-preview** or choose a model enabled for your key, and select the access type shown by your Arena workspace.
 
-**If getting an API key is the problem, start with Ollama.** Open **Settings → AI connections → Install Ollama + small model**. Wait for setup to finish, then **Use local AI — no key → Load models → Save connection → Test connection**. You can also open **SETUP-LOCAL-AI.cmd** from the portable folder.
-
-| Connection | Setup included in version 1.3 | Credentials and limits |
+| Arena key access | What to choose in Dynamic 7land | How to verify |
 | --- | --- | --- |
-| Ollama | Windows installation, local server startup and a small text-model download; optional vision-model setup | No API key or cloud account; uses your PC's disk, memory and compute |
-| FreeLLMAPI | Official Windows installer download with pinned SHA256 verification; local dashboard, model discovery and connection test | Add usable provider connections in its dashboard; paste its unified connection key into Dynamic 7land |
-| OmniRoute | Node.js installation when needed, pinned npm router installation/startup, local dashboard and connection test | Add eligible providers and configure its free-only routing; paste an endpoint key into Dynamic 7land |
-| OpenRouter direct | Free-model selection and enforced zero price ceilings | OpenRouter key required; free request quotas apply |
+| Free-router / interactive Claude Code only | **Interactive Claude Code only (free-router)**, then **Save and open Claude via Arena** | Type a question in the Claude Code terminal that opens |
+| Workspace with API access | **Workspace with API access → Save connection → Test connection** | The app says **Connection successful. Arena returned an answer.** |
 
-Both routers route access that you configure. They do not grant unlimited tokens or make every premium model free. For a free gateway route, enable only eligible free providers and configure spending controls in that router. Its internal fallbacks and billing are outside Dynamic 7land's enforcement. Cloud requests still go to the router's selected upstream provider.
+For the interactive route, choose **Install Claude Code** first if the app says it is missing. Complete the official installer in PowerShell and choose **Refresh status**, then **Save and open Claude via Arena**. That button saves your key before starting Claude Code, passes it through the process environment and uses Arena's official gateway settings. Enable **Claude Code** in **Connections** to show its coding-session activity in the island.
 
-See **[AI-SETUP.md](AI-SETUP.md)** for complete requirements, installer versions, ports, key locations and troubleshooting. External installers and models download only when requested. No private credentials are included. Arena approval is optional.
+**Free-router keys cannot run this app's direct desktop chat, screen questions, Word analysis or project API requests.** Arena restricts them to interactive Claude Code. API-enabled access is required for those direct features, and Arena's pricing and quotas apply. The app does not infer access from a key's prefix or bypass a restriction. The new setup defaults to interactive access and hides the direct test until API access is selected.
 
-### Local routers: OmniRoute and FreeLLMAPI
+Saving clears the visible key box for privacy. **A key is saved** means it is retained. Leave the box blank to keep it. Keys are encrypted using Windows account storage and are never bundled into a public release. Do not paste a key into the repository or an issue.
 
-1. Choose **Use FreeLLMAPI** or **Use OmniRoute** in AI connections.
-2. Use its **Install** button and complete the setup window. Keep FreeLLMAPI's Windows app or OmniRoute's PowerShell window running.
-3. Open the router dashboard and add only eligible free provider connections. Copy **FreeLLMAPI's unified API key** from its tray **Copy Key** button, or **OmniRoute's endpoint key** from **Endpoints**.
-4. Paste it into Dynamic 7land's **Connection key from your router** box. Match its current port: FreeLLMAPI desktop defaults to **31415**, Docker/server to **3001**, and OmniRoute to **20128**.
-5. Choose an available model or your configured routing profile, then **Save connection → Test connection**. Saving clears the visible box; **A key is saved** confirms it is retained.
+**Load models** discovers Arena models available to your key. Saving a key or loading a list does not prove that a model can answer; verify with a terminal question or **Test connection**, as appropriate. Full instructions and troubleshooting are in [AI-SETUP.md](AI-SETUP.md).
 
-Gateway connections use only a validated port on `127.0.0.1`, bearer-header authentication and `/v1/chat/completions` without redirects. Loading a catalog is separate from a successful live answer. The app explains missing providers, unsupported requests and exhausted quotas rather than silently switching its selected provider.
+**Open Arena Agent** opens [Arena's agent workspace](https://arena.ai/agent). Website sessions, tools and sandboxes are separate from API access. Dynamic 7land runs on your Windows PC.
 
-### Free cloud models: OpenRouter
+Official references: [Arena Claude Code setup](https://platform.arena.ai/docs/claude-code), [Arena Codex setup](https://platform.arena.ai/docs/codex).
 
-1. Open **Settings → AI connections** and choose **Use OpenRouter free models**.
-2. Choose **Get a free-model API key**, sign in to OpenRouter and create a key. Keep the account on its free tier; no credit purchase is needed for this setup.
-3. Paste the key in the app. Keep the model as **openrouter/free**, then choose **Save connection → Test connection**.
-4. Use **Load models** if you want to pick an available free model yourself. Only zero-price catalog entries ending in `:free` are listed, plus the free router.
+## Existing accounts and desktop features
 
-The app rejects paid model IDs, sets a zero price ceiling for prompt, completion, request and image prices, and sends no paid fallback array or paid plugins. Free-model quota or availability errors stop the request; the app does not upgrade your plan or buy credits. Available models and rate limits can change. A free model with vision support is required for screenshot questions; structured project requests also require model support.
-
-### Local AI: Ollama
-
-1. Choose **Install Ollama + small model** in AI connections. It installs Ollama if missing and downloads `llama3.2:1b`. Complete any Windows prompts and wait for the setup result. The official download-page button is also available.
-2. For screenshot questions, **Install Ollama + vision model** downloads `gemma3:4b`, if your PC has enough memory; its model download is several GB.
-3. In Dynamic 7land, choose **Use local AI — no key → Load models** and select your downloaded model.
-4. Choose **Save connection → Test connection**. No API key or cloud subscription is used by this route.
-
-Only downloaded local models are allowed. The app checks the local catalog and model details, rejects cloud models and aliases that point to a remote model, and connects only to `http://127.0.0.1:11434` without following redirects. Text and screenshots sent through this route stay with the Ollama server on your PC. Local models use your computer's resources; response speed and quality depend on the model and hardware. A model that does not support images gives a clear error instead of silently ignoring a screenshot.
-
-The existing Claude and Codex account options remain available and follow those services' plan limits. A free chat website account does not automatically grant API access. Original credits and licenses are in the attribution files.
-
-References: [OpenRouter free variants](https://openrouter.ai/docs/guides/routing/model-variants/free), [provider price ceilings](https://openrouter.ai/docs/guides/routing/provider-selection), [Ollama local API](https://docs.ollama.com/api/authentication).
-
-## Connect Claude
-
-1. Open **Settings → AI connections**.
-2. Choose **Install Claude Code** if it was not found. Complete the official installer in PowerShell.
-3. Choose **Sign in to Claude** and complete Claude's browser sign-in. A compatible Claude account or subscription is required by that service.
-4. Refresh status. Enable **Claude Code** under **Connections** to show coding-session activity in the island; restart an existing Claude session after enabling hooks.
-
-You can now select Claude in desktop chat. Claude Code performs the account authentication; Dynamic 7land does not collect your Claude password. Website sessions already open in claude.ai are not automatically imported.
-
-For the **Claude API**, select Claude API as the desktop provider, save your Anthropic API key, choose **Load models**, select an available model ID and save. Use **Test connection** to verify access. API billing is separate from a Claude website subscription.
-
-## Route requests through Arena
-
-1. Get a key through [Arena's API platform](https://platform.arena.ai), and check the access granted to your workspace.
-2. In **AI connections**, select **Arena API**, enter your key and choose its access type. The router model defaults to `coding-router-preview`; use **Load models** for models available to your account.
-3. Save and test the connection. With API-enabled access, desktop chat, screen questions, Word analysis and project AI requests use Arena. Existing coding sessions keep their own provider configuration. You can explicitly select another connected agent in desktop chat.
-4. **Open Claude via Arena** starts interactive Claude Code with the official Arena gateway settings and your saved Arena key. No key is put on its command line.
-
-**Arena free-router keys are restricted to interactive Claude Code.** They cannot run this app's direct API chat, print-mode requests or project tools. Use interactive Claude Code through the Arena launcher, or obtain API-enabled workspace access. The app explains an `organization_client_restricted` response rather than bypassing it.
-
-**Open Arena Agent** opens [Arena's agent workspace](https://arena.ai/agent) in your browser. Arena's website tools, sandboxes and account sessions are separate from the API. This desktop app does not host itself on arena.ai or remotely control all website features.
-
-Official setup references: [Arena Claude Code guide](https://platform.arena.ai/docs), [Arena Codex guide](https://platform.arena.ai/docs/codex), [Claude Code setup](https://code.claude.com/docs/en/setup).
-
-## Features and requirements
+Claude and Codex account connections and monitoring remain available. To use an existing account for desktop chat, select **Existing Claude / Codex account setup** in AI connections and save. Use **Sign in to Claude**, or **Open AI & Chat sign-in** for the existing ChatGPT/Codex connection. These accounts keep their own access and plan limits. Enable their hooks under **Connections** and restart an existing coding session after enabling hooks.
 
 | Feature | Setup or current limit |
 | --- | --- |
-| Desktop island and robot | Moods, animations, outfits, notifications and customisation retained |
-| Claude Code / Codex monitoring | Enable local hooks in Connections; restart the agent |
-| Coding approvals, history and usage | Depends on information and controls exposed by the coding agent |
-| Desktop chat and screenshot buddy | Choose OmniRoute / FreeLLMAPI, OpenRouter free models, local Ollama, a signed-in Claude / Codex account, or Arena / Claude API |
-| Word spelling review and summaries | Windows Word required; proposed fixes remain tracked changes for review |
-| Project questions and reviewed edits | Select a project; original editor validation, backup and undo retained |
-| VS Code project integration | Install the included `vscode-editor/dynamic7land-project-editor.vsix`; ID `jeevapilli.project-editor` |
-| File tray, clipboard, note and focus timer | Local desktop tools |
-| Spotify controls and devices | Your own Spotify Client ID and account; playback limits depend on Spotify |
-| Weather and ICS calendar | Configure location / calendar URL in General; network required |
-| Browser Claude / ChatGPT conversation monitoring | Marked coming soon by the supplied release; still unavailable |
+| Desktop island and robot | Moods, animations, outfits, notifications and customisation |
+| Claude Code / Codex monitoring | Local hooks, session state, approvals, history and usage exposed by the coding agent |
+| Arena desktop chat and screenshot buddy | API-enabled Arena workspace; a model supporting the request |
+| Word review and summaries | Windows Word and an eligible AI connection; proposed fixes remain tracked changes |
+| Project questions and reviewed edits | Select a project; file validation, review, backups and undo retained |
+| VS Code project integration | Included `vscode-editor/dynamic7land-project-editor.vsix`; ID `jeevapilli.project-editor` |
+| File tray, clipboard, notes and focus timer | Local desktop tools |
+| Spotify | Your Spotify Client ID and account; playback follows Spotify's limits |
+| Weather and ICS calendar | Configure location / calendar URL in General |
+| Browser Claude / ChatGPT conversation monitoring | Still unavailable in the supplied desktop source |
 | Optional companion website | Original website backend was not included in the supplied source |
 
-For Spotify, create your own developer app and register `http://127.0.0.1:8890/callback`. Save its public Client ID in **Service setup**, then connect from Music in the island. PKCE is used; no Spotify Client Secret is needed.
+For Spotify, register `http://127.0.0.1:8890/callback` in your developer app, then save its public Client ID in **Service setup**. The app uses PKCE; no client secret is needed.
 
-## Privacy and local data
+## Updating from an earlier version
 
-Cloud provider keys are saved through Electron safeStorage on Windows. They are never returned to the settings renderer or included in a release. Do not commit keys or AppData profiles. See [SECURITY.md](SECURITY.md).
+Version 1.4 removes the added OpenRouter, Ollama, OmniRoute, FreeLLMAPI and direct Claude API connections, setup cards and external-router/model installers. Arena and the original Claude/Codex account features remain. If an old removed connection was selected, the app switches its connection form to Arena and asks for Arena setup. It retains an existing encrypted Arena key and its access choice, removes unused retired provider-key entries from the app's connection file, and preserves conversation history. An existing account selection stays selected.
 
-The profile lives in `%APPDATA%\Dynamic7land`. Local hook traffic uses `127.0.0.1:47825` with a local token. The app does not import passwords or tokens from another desktop edition. Screenshots, document text and selected project context are sent to the chosen provider when those features are used. With local Ollama, the app sends this context only to the server on your PC. Provider history is stored locally; removing a key does not erase old conversations.
+The update does not uninstall other applications or models from Windows and does not revoke external account credentials. Extract into a fresh folder so old setup launchers are not left alongside the new app.
+
+## Privacy
+
+The profile lives in `%APPDATA%\Dynamic7land`. Arena keys use Electron safeStorage on Windows and are not returned to the settings renderer. Screenshots, document text and selected project context are sent to the selected AI service when you use those features. Provider conversation history is stored locally; removing a key does not delete old conversations. Local hook traffic uses `127.0.0.1:47825` with a local token. See [SECURITY.md](SECURITY.md).
 
 ## Build and verify
 
-Use Windows 10/11 x64 and Node.js **22.12+** for building:
+Use Windows 10/11 x64 and Node.js **22.12+** to build:
 
 ```powershell
 npm.cmd ci --include=optional
@@ -117,24 +70,12 @@ npm.cmd run check:syntax
 npm.cmd run build:windows
 ```
 
-The portable folder is `dist/Dynamic7land`. For development, run `npm.cmd start` or `npm.cmd run start:settings`. Windows packaging copies the pinned Electron runtime and Codex Windows component, then sets the app icon and executable metadata. The executable is unsigned.
+The portable folder is `dist/Dynamic7land`. For development, use `npm.cmd start` or `npm.cmd run start:settings`. GitHub Actions tests the source, parses the Windows helper scripts, builds the portable app and publishes the ZIP plus SHA256 checksum. The executable is unsigned.
 
-The prepared edition passed **54 automated tests**, source syntax checks, renderer flows using the actual provider service, and a real loopback HTTP gateway test. The Windows workflows also parse the PowerShell setup script and build the portable package. Native GUI startup, external installations, screen capture, Word, notifications and live provider account access still require a Windows smoke test with your own accounts. No live API key was used for these checks.
+Automated tests exercise encrypted storage, Arena routing, API restrictions, upgrade migration and renderer flows using simulated responses. Native Windows GUI behavior and live Arena access require testing on your PC. No live user key is used by CI. See [BUILD-INFO.json](BUILD-INFO.json) for the verified checks and their limits.
 
-## Publish your public repository
-
-The source includes a GitHub publishing script for **iamjeevapilli/dynamic-7land**, plus CI and tagged Windows-release workflows. Publishing does not require sharing a GitHub password in chat or placing one in the source.
-
-Install [Git for Windows](https://git-scm.com/downloads/win) and the [GitHub CLI](https://cli.github.com), reopen PowerShell and run this from a freshly extracted source folder:
-
-```powershell
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\PUBLISH-TO-GITHUB.ps1
-```
-
-The script uses GitHub's browser sign-in, verifies the account is `iamjeevapilli`, creates a **public** repository, commits and pushes this source, and pushes the tag matching `package.json`. It stops if the repository already exists or this folder already contains Git history. It never overwrites an existing repository. GitHub Actions then builds and publishes the full Windows ZIP and checksum; inspect the Actions result before treating the release as ready.
-
-For subsequent releases, update the package and release-note versions, test, then push a matching `v` tag. Set your repository under **Service setup → Your GitHub releases repository** after publishing, to enable release news in the app.
+The source includes CI, a tagged release workflow and `PUBLISH-TO-GITHUB.ps1` for initial publication to a new repository through GitHub CLI browser sign-in. For this existing public repository, update the version and release notes, verify, then run the publishing workflow with the matching `v` tag. No GitHub password belongs in the source.
 
 ## Attribution
 
-Credits, source provenance and license information are provided in [CREDITS.md](CREDITS.md), [LICENSE-DYNAMIC7LAND.txt](LICENSE-DYNAMIC7LAND.txt), `UPSTREAM.json` and `upstream-notices/`.
+Credits, source provenance and license information remain in [CREDITS.md](CREDITS.md), [LICENSE-DYNAMIC7LAND.txt](LICENSE-DYNAMIC7LAND.txt), `UPSTREAM.json` and `upstream-notices/`.
