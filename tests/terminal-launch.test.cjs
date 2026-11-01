@@ -41,5 +41,7 @@ $keyboard = [Dynamic7landConsoleProbe]::GetConsoleMode([Dynamic7landConsoleProbe
   assert.ok(fs.existsSync(marker), 'The real terminal ran its command');
   const result = JSON.parse(fs.readFileSync(marker, 'utf8').replace(/^\uFEFF/, ''));
   assert.equal(result.keyboard, true, 'The new terminal has a keyboard console handle');
-  assert.equal(result.inherited, true); assert.equal(result.folder.toLowerCase(), directory.toLowerCase());
+  assert.equal(result.inherited, true);
+  // Windows TEMP may use an 8.3 alias while PowerShell reports the long name.
+  assert.equal(fs.realpathSync.native(result.folder).toLowerCase(), fs.realpathSync.native(directory).toLowerCase());
 });
