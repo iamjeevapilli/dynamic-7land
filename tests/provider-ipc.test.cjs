@@ -25,32 +25,29 @@ test('only the local settings page can read provider status, change routing or l
   assert.equal((await handlers.get('agent-connections:action')(valid, 'unknown-action')).ok, false);
 });
 
-test('Windows setup actions launch only fixed local scripts and router dashboards use the validated loopback port', async t => {
+test('Arena launches pass secrets only in the child environment and retired installers cannot launch', async t => {
   const { EventEmitter } = require('node:events');
-  const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'dynamic7land-setup-ipc-'));
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'dynamic7land-arena-ipc-'));
   t.after(() => fs.rmSync(directory, { recursive: true, force: true }));
+  const bin = path.join(directory, '.local', 'bin'); fs.mkdirSync(bin, { recursive: true }); fs.writeFileSync(path.join(bin, 'claude.exe'), 'test fixture');
   const handlers = new Map(), opened = [], spawned = [], root = path.resolve(__dirname, '..');
-  const electron = { app: { getPath: () => directory, emit: () => {} }, ipcMain: { handle: (name, fn) => handlers.set(name, fn) }, safeStorage: {}, shell: { openExternal: async url => opened.push(url) } };
-  const context = { require: name => name === 'electron' ? electron : name === 'node:child_process' ? { spawn: (file, args, options) => {
+  const safeStorage = { isEncryptionAvailable: () => true, encryptString: s => Buffer.from(s), decryptString: b => b.toString() };
+  const electron = { app: { getPath: () => directory, emit: () => {} }, ipcMain: { handle: (name, fn) => handlers.set(name, fn) }, safeStorage, shell: { openExternal: async url => opened.push(url) } };
+  const context = { require: name => name === 'electron' ? electron : name === 'node:os' ? { ...os, homedir: () => directory } : name === 'node:child_process' ? { spawn: (file, args, options) => {
     spawned.push({ file, args, options }); const child = new EventEmitter(); child.unref = () => {}; queueMicrotask(() => child.emit('spawn')); return child;
   } } : name.startsWith('./') ? require(path.join(root, name)) : require(name),
-  module: { exports: {} }, __dirname: root, process: { ...process, platform: 'win32', env: { ...process.env, ELECTRON_RUN_AS_NODE: '1' } }, URL, Buffer };
+  module: { exports: {} }, __dirname: root, process: { platform: 'win32', env: { PATH: '', ELECTRON_RUN_AS_NODE: '1', ANTHROPIC_API_KEY: 'conflicting-key', ANTHROPIC_DEFAULT_SONNET_MODEL: 'other-model', CLAUDE_CODE_USE_VERTEX: '1' } }, URL, Buffer };
   vm.runInNewContext(fs.readFileSync(path.join(root, 'agent-connections-main.cjs'), 'utf8'), context);
   const valid = { senderFrame: { url: pathToFileURL(path.join(root, 'settings-app.html')).href } };
   const foreign = { senderFrame: { url: 'https://example.invalid/settings-app.html' } };
-  const act = handlers.get('agent-connections:action');
-  for (const [action, tool] of [['setup-ollama', 'ollama'], ['setup-ollama-vision', 'ollama-vision'], ['setup-freellmapi', 'freellmapi'], ['setup-omniroute', 'omniroute']]) {
-    assert.equal((await act(foreign, action)).ok, false);
-    assert.equal((await act(valid, action)).ok, true);
-    const call = spawned.at(-1); assert.equal(call.file, 'powershell.exe'); assert.equal(call.options.shell, false);
-    assert.equal(call.options.env.ELECTRON_RUN_AS_NODE, undefined);
-    assert.ok(call.args.includes('-ExecutionPolicy')); assert.match(call.args.at(-1), new RegExp('AI-SETUP\\.ps1.* -Tool ' + tool + '$'));
-  }
-  assert.equal(spawned.length, 4);
-  for (const invalid of ['setup-omniroute; anything', ['setup-ollama'], {}, null]) assert.equal((await act(valid, invalid)).ok, false);
-  assert.equal(spawned.length, 4);
-  await handlers.get('agent-connections:set')(valid, { provider: 'freellmapi', gatewayPort: 31416 });
-  assert.equal((await act(valid, 'freellmapi-dashboard')).ok, true);
-  assert.equal((await act(valid, 'omniroute-dashboard')).ok, true);
-  assert.deepEqual(opened, ['http://127.0.0.1:31416', 'http://127.0.0.1:20128']);
+  const act = handlers.get('agent-connections:action'), secret = 'test-only-arena-token';
+  await handlers.get('agent-connections:set')(valid, { provider: 'arena', key: secret, model: 'workspace-model' });
+  assert.equal((await act(foreign, 'claude-arena')).ok, false); assert.equal(spawned.length, 0);
+  assert.equal((await act(valid, 'claude-arena')).ok, true);
+  const call = spawned[0]; assert.equal(call.file, 'powershell.exe'); assert.equal(call.options.shell, false); assert.equal(call.options.env.ELECTRON_RUN_AS_NODE, undefined);
+  assert.equal(call.options.env.ANTHROPIC_AUTH_TOKEN, secret); assert.equal(call.options.env.ANTHROPIC_MODEL, 'workspace-model');
+  for (const name of ['ANTHROPIC_API_KEY', 'ANTHROPIC_DEFAULT_SONNET_MODEL', 'CLAUDE_CODE_USE_VERTEX']) assert.equal(call.options.env[name], undefined);
+  assert.equal(JSON.stringify(call.args).includes(secret), false); assert.equal(call.args.includes('-ExecutionPolicy'), false);
+  for (const action of ['setup-ollama', 'setup-ollama-vision', 'setup-freellmapi', 'setup-omniroute', 'omniroute-dashboard', 'freellmapi-dashboard', 'openrouter-keys', 'ollama-download', 'setup-omniroute; anything', ['claude-arena'], {}, null]) assert.equal((await act(valid, action)).ok, false);
+  assert.equal(spawned.length, 1); assert.deepEqual(opened, []);
 });
